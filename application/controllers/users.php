@@ -610,6 +610,26 @@ class Users extends REST_Controller
         }
     }
 
+    function last_leave_request_id_get()
+    {
+        $this->db->select_max("IDLEAVEREQUEST");
+        $this->db->select_max("RECID");
+        $this->db->select_max("RECVERSION");
+        $q = $this->db->get("HRSLEAVEREQUEST");
+        
+        $users = $q->result_array();//$get_all_users->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function sisa_cuti_post()
     {
         $data=array(
@@ -618,18 +638,81 @@ class Users extends REST_Controller
          );
 
         $this->db->where('RECID', $this->get('RECID'));
-    $result = $this->db->update('HRSLEAVEENTITLEMENT', $data);
+        $result = $this->db->update('HRSLEAVEENTITLEMENT', $data);
 
-    if($result === FALSE)  
-    {  
-        $this->response(array('status' => 'failed'));  
-    }  
-    else  
-    {  
-         
-        $this->response(array('status' => 'success'));
-           
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
     }
 
+    function leave_request_post()
+    {
+        $data=array(
+        'EMPLID' => $this->get('EMPLID'),
+        'HRSLEAVETYPEID' => $this->get('HRSLEAVETYPEID'),
+        'REMARKS' => $this->get('REMARKS'),
+        'CONTACTPHONE' => $this->get('CONTACTPHONE'),
+        'TOTALLEAVEDAYS' => $this->get('TOTALLEAVEDAYS'),
+        'LEAVEDATETO' => $this->get('LEAVEDATETO'),
+        'LEAVEDATEFROM' => $this->get('LEAVEDATEFROM'),
+        'REQUESTDATE' => $this->get('REQUESTDATE'),
+        'IDLEAVEREQUEST' => $this->get('IDLEAVEREQUEST'),
+        'STATUSFLAG' => $this->get('STATUSFLAG'),
+        'IDPERSONSUBSTITUTE' => $this->get('IDPERSONSUBSTITUTE'),
+        'TRAVELLINGLOCATION' => $this->get('TRAVELLINGLOCATION'),
+        'MODIFIEDDATETIME' => $this->get('MODIFIEDDATETIME'),
+        'MODIFIEDBY' => $this->get('MODIFIEDBY'),
+        'CREATEDDATETIME' => $this->get('CREATEDDATETIME'),
+        'CREATEDBY' => $this->get('CREATEDBY'),
+        'DATAAREAID' => $this->get('DATAAREAID'),
+        'RECVERSION' => $this->get('RECVERSION'),
+        'RECID' => $this->get('RECID'),
+        'BRANCHID' => $this->get('BRANCHID'),
+        'DIMENSION' => $this->get('DIMENSION'),
+        'DIMENSION2_' => $this->get('DIMENSION2_'),
+        'HRSLOCATIONID' => $this->get('HRSLOCATIONID'),
+        'HRSEMPLGROUPID' => $this->get('HRSEMPLGROUPID'),
+        'STATUSFLAG1' => 0,
+        'CARRYUSED' => 0,
+        'BLANKLEAVE' => 0,
+        'IDAPPROVAL' => ' ',
+        'DIMENSION3_' => ' ',
+         );
+
+        $result = $this->db->insert('HRSLEAVEREQUEST', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+            print_r($this->db->last_query());
+            $this->response(array('status' => 'success'));
+               
+        }
+    }
+
+    function type_cuti_get()
+    {
+        $users = $this->api_model->get_type_cuti();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
     }
 }
