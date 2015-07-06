@@ -71,41 +71,61 @@ class api_model extends CI_Model {
 function get_employement($emplid)
 {
 	$max_recversion = $this->get_new_recversion($emplid, 'EMPLIDENTIFICATIONTABLE');
-	$max_date_vnhistorytable = $this->get_new_recversion_vnhistorytable($emplid);
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
 	//$this->db->distinct();
-	$this->db->select("EMPLOYEETABLE.EMPLID,EMPLOYEETABLE.NAME AS NAME,EMPLOYEETABLE.BRANCHID AS BRANCHID,EMPLOYEETABLE.DIMENSION2_ AS DIMENSION2_,EMPLOYEETABLE.DATAAREAID AS DATAAREAID, EMPLOYEETABLE.HRSLOCATIONID AS LOCATIONID,EMPLOYEETABLE.EMPLGROUPID AS EMPLGROUPID, EMPLOYEETABLE.DIMENSION AS BUID, DIMENSIONSTABLE.DESCRIPTION AS BU, EMPLOYEETABLE.AVIVANUMBER AS AVIVA, EMPLOYEETABLE.HRSJAMSNO AS JAMSOSTEK, IDENTIFICATIONTABLE.IDNUMBER AS KTP, IDENTIFICATIONTABLE.VALIDDATE AS KTPVALIDDATE, EMPLOYEETABLE.HRSTAXREGISTEREDDESC AS NPWP, EMPLOYEETABLE.ERL_BPJSKESNUM AS BPJS, EMPLOYEETABLE.ERL_BPJSKESDATE AS BPJSDATE, EMPLOYEETABLE.ERL_BUMIDANUM AS BUMIDA, EMPLOYEETABLE.ERL_BUMIDADATE AS BUMIDADATE, TAXTABLE.TAXCATEGORYID AS TAX, EMPLOYEETABLE.SENIORITYDATE,POSITIONTABLE.HRSPOSITIONID AS POSID,POSITIONTABLE.DESCRIPTION AS POSITION,ORGANIZATIONTABLE.HRSORGANIZATIONID AS ORGID, ORGANIZATIONTABLE.DESCRIPTION AS ORGANIZATION,EMPLOYEETABLE.HRSEMPLSTATUS AS EMPLOYEESTATUS, EMPLOYEETABLE.STATUS AS STATUS, EMPLOYEETABLE.RESIGNREASONCODEID, DIMENSIONSTABLE.DESCRIPTION AS COSTCENTER, POSITIONTABLE.HRSPOSITIONGROUPID AS POSITIONGROUP, VNHISTORYTABLE.HRSGRADEID AS GRADE, EMPLOYEETABLE.HRSACTIVEINACTIVE AS ACTIVEINACTIVE, EMPLOYEETABLE.PHONE AS PHONE,EMPLOYEETABLE.EMAIL AS EMAIL, EMPLOYEETABLE.SMS AS PREVIOUSEMAIL, EMPLOYEETABLE.PINBLACKBERRY AS PINBB");
+	$this->db->select("EMPLOYEETABLE.EMPLID,EMPLOYEETABLE.NAME AS NAME,EMPLOYEETABLE.BRANCHID AS BRANCHID,EMPLOYEETABLE.DIMENSION2_ AS DIMENSION2_,EMPLOYEETABLE.DATAAREAID AS DATAAREAID, EMPLOYEETABLE.HRSLOCATIONID AS LOCATIONID,EMPLOYEETABLE.EMPLGROUPID AS EMPLGROUPID, EMPLOYEETABLE.DIMENSION AS BUID, BU.DESCRIPTION AS BU, EMPLOYEETABLE.AVIVANUMBER AS AVIVA, EMPLOYEETABLE.HRSJAMSNO AS JAMSOSTEK, IDENTIFICATIONTABLE.IDNUMBER AS KTP, IDENTIFICATIONTABLE.VALIDDATE AS KTPVALIDDATE, EMPLOYEETABLE.HRSTAXREGISTEREDDESC AS NPWP, EMPLOYEETABLE.ERL_BPJSKESNUM AS BPJS, EMPLOYEETABLE.ERL_BPJSKESDATE AS BPJSDATE, EMPLOYEETABLE.ERL_BUMIDANUM AS BUMIDA, EMPLOYEETABLE.ERL_BUMIDADATE AS BUMIDADATE, TAXTABLE.TAXCATEGORYID AS TAX, EMPLOYEETABLE.SENIORITYDATE,POSITIONTABLE.HRSPOSITIONID AS POSID,POSITIONTABLE.DESCRIPTION AS POSITION,ORGANIZATIONTABLE.HRSORGANIZATIONID AS ORGID, ORGANIZATIONTABLE.DESCRIPTION AS ORGANIZATION,EMPLOYEETABLE.HRSEMPLSTATUS AS EMPLOYEESTATUS, EMPLOYEETABLE.STATUS AS STATUS, EMPLOYEETABLE.RESIGNREASONCODEID,COSTCENTER.NUM AS COSTCENTERID, COSTCENTER.DESCRIPTION AS COSTCENTER, POSITIONTABLE.HRSPOSITIONGROUPID AS POSITIONGROUP, VNHISTORYTABLE.HRSGRADEID AS GRADE, EMPLOYEETABLE.HRSACTIVEINACTIVE AS ACTIVEINACTIVE, EMPLOYEETABLE.PHONE AS PHONE,EMPLOYEETABLE.EMAIL AS EMAIL, EMPLOYEETABLE.SMS AS PREVIOUSEMAIL, EMPLOYEETABLE.PINBLACKBERRY AS PINBB");
 	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE");
 
 	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID', 'left');
 	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID','left');
 	$this->db->join('HRSPOSITION AS POSITIONTABLE', 'POSITIONTABLE.HRSPOSITIONID = VNHISTORYTABLE.HRSPOSITIONID','left');
 	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE', 'ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID','left');
-	$this->db->join('DIMENSIONS as DIMENSIONSTABLE', 'DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION', 'left');
-	$this->db->join('DIMENSIONS AS DIMENSIONSTABLE2', 'DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_','left');
+	$this->db->join('DIMENSIONS as BU', 'BU.NUM = EMPLOYEETABLE.DIMENSION', 'left');
+	$this->db->join('DIMENSIONS AS COSTCENTER', 'COSTCENTER.NUM = EMPLOYEETABLE.DIMENSION2_','left');
 	$this->db->join('EMPLIDENTIFICATIONTABLE AS IDENTIFICATIONTABLE', 'IDENTIFICATIONTABLE.EMPLID = EMPLOYEETABLE.EMPLID','left');
 	$this->db->join('HRSTAXCATEGORY AS TAXTABLE', 'TAXTABLE.TAXCATEGORYID= EMPLOYEETABLE.HRSTAXCATEGORYID','left');
 	
 	
 	$this->db->where('EMPLOYEETABLE.EMPLID', $emplid);
-	$this->db->where('IDENTIFICATIONTABLE.RECVERSION', $max_recversion);
-	$this->db->where('VNHISTORYTABLE.CREATEDDATETIME', $max_date_vnhistorytable['CREATEDDATETIME']);
-
+	$this->db->where('VNHISTORYTABLE.ENDDATE', $null_date_vnhistorytable);
+	$this->db->where('BU.DIMENSIONCODE',1);
+	$this->db->where('COSTCENTER.DIMENSIONCODE',1);
+	
+	//$this->db->where('VNHISTORYTABLE.CREATEDDATETIME', $max_date_vnhistorytable['CREATEDDATETIME']);
     $q = $this->db->get()->row_array();
-
     return $q;
 }
 
-function get_new_recversion_vnhistorytable($emplid)
+function get_null_enddate_vnhistorytable($emplid)
 {
 	//$this->db->distinct();
-    $this->db->select_max('VNHISTORYTABLE.CREATEDDATETIME');
+    $this->db->select('VNHISTORYTABLE.ENDDATE');
+    $this->db->from("HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID', 'left');
+
+	$this->db->where('VNTABLE.REFERENCE', $emplid);
+	$this->db->where('VNHISTORYTABLE.ENDDATE', '1900-01-01 00:00:00.000');
+	$q = $this->db->get();
+    return $q->row_array('VNHISTORYTABLE.ENDDATE');
+}
+
+function get_max_enddate_vnhistorytable($emplid)
+{
+	//$this->db->distinct();
+    $this->db->select_max('VNHISTORYTABLE.ENDDATE');
     $this->db->from("HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE");
 
 	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID', 'left');
 
 	$this->db->where('VNTABLE.REFERENCE', $emplid);
 	$q = $this->db->get();
-    return $q->row_array('VNHISTORYTABLE.CREATEDDATETIME');
+    return $q->row_array('VNHISTORYTABLE.ENDDATE');
 }
 
 function get_new_recversion($emplid, $tablename)
@@ -130,24 +150,151 @@ function get_employee_by_position($posid)
 	$this->db->join('HRSPOSITION AS POSITIONTABLE', 'POSITIONTABLE.HRSPOSITIONID = VNHISTORYTABLE.HRSPOSITIONID','left');
 	
 	$this->db->where('POSITIONTABLE.HRSPOSITIONID', $posid);
+	//$this->db->where('VNHISTORYTABLE.ENDDATE', '1900-01-01 00:00:00.000');
 
     $q = $this->db->get()->row_array();
 
     return $q;
 }
 
-function get_superior($emplid)
+function get_superior_by_bu($emplid)
 {
-	$id_cost = $this->get_cost_center_desc($emplid);
-	$id_org = $this->get_org_id($emplid);
-	$id_cost = $id_cost['NUM'];
-	$id_org = $id_org['ORGANIZATIONID'];
-	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID WHERE ORGANIZATIONTABLE.HRSORGANIZATIONID = '$id_org' AND EMPLOYEETABLE.STATUS != 2 AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1 UNION SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE JOIN DIMENSIONS AS DIMENSIONSTABLE ON DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_ WHERE EMPLOYEETABLE.DIMENSION2_ = '$id_cost' AND EMPLOYEETABLE.STATUS != 2 AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1");
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
 
-    return $q->result_array();
+	$id_bu = $this->get_empl_bu_id($emplid)['DIMENSION'];
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+/*SELECT DISTINCT 
+		EMPLOYEETABLE.EMPLID AS ID, 
+		EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID 
+		WHERE ORGANIZATIONTABLE.HRSORGANIZATIONID = '$id_org' 
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade' 
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND VNHISTORYTABLE.ENDDATE = '$null_date_vnhistorytable'
+		UNION */
+	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE  
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '2014-01-01 00:00:00')
+		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  >= '$id_grade'  
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		");
 
+    	return $q->result_array();
 }
 
+function get_bawahan_by_bu($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$id_bu = $this->get_empl_bu_id($emplid)['DIMENSION'];
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+
+	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE  
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '2014-01-01 00:00:00')
+		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  <= '$id_grade'  
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND EMPLOYEETABLE.EMPLID != '$emplid' ORDER BY EMPLOYEETABLE.NAME ASC;
+		");
+
+    	return $q->result_array();
+}
+
+function get_superior($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$id_cost = $this->get_cost_center_desc($emplid);
+	$id_org = $this->get_org_id($emplid);
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+	$id_cost = $id_cost['NUM'];
+	$id_org = $id_org['ORGANIZATIONID'];
+/*SELECT DISTINCT 
+		EMPLOYEETABLE.EMPLID AS ID, 
+		EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID 
+		WHERE ORGANIZATIONTABLE.HRSORGANIZATIONID = '$id_org' 
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade' 
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND VNHISTORYTABLE.ENDDATE = '$null_date_vnhistorytable'
+		UNION */
+	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN DIMENSIONS AS DIMENSIONSTABLE ON DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_ 
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '2014-01-01 00:00:00')
+		AND EMPLOYEETABLE.DIMENSION2_ = '$id_cost'
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  >= '$id_grade'
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		");
+
+    	return $q->result_array();
+}
+/*function get_superior($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$id_cost = $this->get_cost_center_desc($emplid);
+	$id_org = $this->get_org_id($emplid);
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+	//$id_grade = substr($grade, 2);
+	$id_cost = $id_cost['NUM'];
+	$id_org = $id_org['ORGANIZATIONID'];
+
+	$this->db->distinct();
+	$this->db->select("EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME, VNHISTORYTABLE.HRSGRADEID");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID');
+	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE', 'ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID');
+	$this->db->join('DIMENSIONS AS DIMENSIONSTABLE', 'DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_');
+	$this->db->where("(EMPLOYEETABLE.DIMENSDION2_= '$id_org' OR EMPLOYEETABLE.DIMENSION2_ = '$id_cost')",null, false);
+	$this->db->where('EMPLOYEETABLE.STATUS !=', 2);
+	$this->db->where('EMPLOYEETABLE.HRSACTIVEINACTIVE !=', 1);
+
+	$this->db->where('VNHISTORYTABLE.ENDDATE', $null_date_vnhistorytable);
+	//$this->db->where('VNHISTORYTABLE.ENDDATE', '1900-01-01 00:00:00.000');
+	$this->db->where("RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade'");
+
+	$q = $this->db->get()->result_array();
+	 return $q;
+}*/
 function get_cost_center($emplid)
 {
 	$id = $this->get_cost_center_desc($emplid);
@@ -207,21 +354,44 @@ function get_cost_center_desc($emplid)
     return $q;
 }
 
+function get_empl_bu_id($emplid)
+{
+	$this->db->distinct();
+	$this->db->select("EMPLOYEETABLE2.DIMENSION");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
+	
+	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
 
-function get_org($emplid)
+    $q = $this->db->get()->row_array('DIMENSION');
+
+    return $q;
+}
+
+
+function get_empl_same_org($emplid)
 {
 	$id = $this->get_org_id($emplid);
+	$id_cost = $this->get_cost_center_desc($emplid)['NUM'];
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
 	$this->db->distinct();
 	$this->db->select("EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME");
 	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE");
 
-	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID');
-	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID');
-	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE', 'ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID');
+	//$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID');
+	//$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID');
+	//$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE', 'ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID');
 
-	$this->db->where('ORGANIZATIONTABLE.HRSORGANIZATIONID', $id['ORGANIZATIONID']);
+	//$this->db->where('ORGANIZATIONTABLE.HRSORGANIZATIONID', $id['ORGANIZATIONID']);
+	$this->db->where('EMPLOYEETABLE.DIMENSION2_', $id_cost);
 	$this->db->where('EMPLOYEETABLE.STATUS !=', 2);
 	$this->db->where('EMPLOYEETABLE.HRSACTIVEINACTIVE !=', 1);
+	//$this->db->where('VNHISTORYTABLE.ENDDATE', $null_date_vnhistorytable);
 
     $q = $this->db->get()->result_array();
 
@@ -230,6 +400,13 @@ function get_org($emplid)
 
 function get_org_id($emplid)
 {
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
 	$this->db->distinct();
 	$this->db->select("ORGANIZATIONTABLE2.HRSORGANIZATIONID AS ORGANIZATIONID");
 	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
@@ -240,8 +417,35 @@ function get_org_id($emplid)
 	
 	
 	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
+	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
 
-    $q = $this->db->get()->row_array('HRSORGANIZATIONID');
+    $q = $this->db->get()->row_array('ORGANIZATIONID');
+
+    return $q;
+}
+
+function get_grade($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$this->db->distinct();
+	$this->db->select("VNHISTORYTABLE2.HRSGRADEID");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE2', 'VNTABLE2.REFERENCE = EMPLOYEETABLE2.EMPLID');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE2', 'VNHISTORYTABLE2.HRSVIRTUALNETWORKID = VNTABLE2.HRSVIRTUALNETWORKID');
+	
+	
+	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
+	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
+	
+
+    $q = $this->db->get()->row_array('HRSGRADEID');
 
     return $q;
 }

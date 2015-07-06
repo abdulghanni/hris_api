@@ -122,7 +122,7 @@ class Users extends REST_Controller
         }
         
         $emplid = $this->get('EMPLID');
-        $users = $this->api_model->get_org($emplid);
+        $users = $this->api_model->get_empl_same_org($emplid);
         
         if($users)
         {
@@ -165,6 +165,48 @@ class Users extends REST_Controller
         
         $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_superior($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function atasan_satu_bu_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_superior_by_bu($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function bawahan_satu_bu_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_bawahan_by_bu($emplid);
         
         if($users)
         {
@@ -617,6 +659,29 @@ class Users extends REST_Controller
         $this->db->select_max("RECVERSION");
         $q = $this->db->get("HRSLEAVEREQUEST");
         
+        $users = $q->result_array();//$get_all_users->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function admin_asset_management_get()
+    {
+        $q = $this->db->select('EMPLOYEE.EMPLID, EMPLOYEE.NAME')
+             ->from('HRSEMPLOYEETABLE AS EMPLOYEE')
+             ->join('HRSORGANIZATION AS ORGANIZATION', 'EMPLOYEE.DIMENSION2_ = ORGANIZATION.HRSORGANIZATIONID')
+             ->where('ORGANIZATION.PARENTORGANIZATIONID', '50320000')
+             ->where('EMPLOYEE.STATUS !=', 2)
+             ->where('EMPLOYEE.HRSACTIVEINACTIVE !=', 1)
+             ->get();
+
         $users = $q->result_array();//$get_all_users->result_array();
         
         if($users)
