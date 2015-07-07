@@ -631,7 +631,7 @@ class Users extends REST_Controller
         }
     }
 	
-	function sisa_cuti_get()
+	function edit_empoyee_get()
     {
         if(!$this->get('EMPLID'))
         {
@@ -639,7 +639,7 @@ class Users extends REST_Controller
         }
         
         $emplid = $this->get('EMPLID');
-        $users = $this->api_model->get_sisa_cuti($emplid);
+        $users = $this->api_model->get_edit_empoyee($emplid);
         
         if($users)
         {
@@ -695,7 +695,7 @@ class Users extends REST_Controller
         }
     }
 
-    function sisa_cuti_post()
+    function edit_empoyee_post()
     {
         $data=array(
         'RECID' => $this->get('RECID'),
@@ -764,6 +764,34 @@ class Users extends REST_Controller
             $this->response(array('status' => 'success'));
                
         }
+    }
+
+    function edit_employee_post()
+    {
+        $data=array(
+        'FIRSTNAME' => $this->get('FIRSTNAME'),
+        'LASTNAME' => $this->get('LASTNAME'),
+        'BIRTHDATE' => $this->get('BIRTHDATE'),
+        'PHONE' => $this->get('PHONE'),
+        'MARITALSTATUS' => $this->get('MARITALSTATUS'),
+        'SMS' => $this->get('SMS'),
+        'PINBLACKBERRY' => $this->get('PINBLACKBERRY'),
+         );
+
+        $this->db->where('EMPLID', $this->get('EMPLID'));
+        $result = $this->db->update('HRSEMPLOYEETABLE', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => $this->db->last_query()));
+               
+        }
+
     }
 
     function type_cuti_get()
