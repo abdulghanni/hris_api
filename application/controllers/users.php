@@ -651,27 +651,6 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	function edit_empoyee_get()
-    {
-        if(!$this->get('EMPLID'))
-        {
-            $this->response(NULL, 400);
-        }
-        
-        $emplid = $this->get('EMPLID');
-        $users = $this->api_model->get_edit_empoyee($emplid);
-        
-        if($users)
-        {
-            $this->response($users, 200); // 200 being the HTTP response code
-        }
-
-        else
-        {
-            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
-        }
-    }
 
     function last_leave_request_id_get()
     {
@@ -716,7 +695,28 @@ class Users extends REST_Controller
         }
     }
 
-    function edit_empoyee_post()
+    function sisa_cuti_get()
+    {
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_sisa_cuti($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function sisa_cuti_post()
     {
         $data=array(
         'RECID' => $this->get('RECID'),
@@ -781,7 +781,7 @@ class Users extends REST_Controller
         }  
         else  
         {  
-            print_r($this->db->last_query());
+            //print_r($this->db->last_query());
             $this->response(array('status' => 'success'));
                
         }
