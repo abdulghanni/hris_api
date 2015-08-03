@@ -26,14 +26,14 @@ class Attendance extends REST_Controller
             $this->response(NULL, 400);
         }
 
-            
-         if($this->get('MONTH'))
+           
+        if($this->get('MONTH') !== 'thn' && !empty($this->get('MONTH')))
         {
             $this->get('MONTH');
             $month = $this->db->where('month(ATTENDANCEDATE)='.$this->get('MONTH'));
         }
 
-        if($this->get('YEAR'))
+        if($this->get('YEAR') !== 'thn' && !empty($this->get('YEAR')))
         {
             $this->get('YEAR');
             $year = $this->db->where('year(ATTENDANCEDATE)='.$this->get('YEAR'));
@@ -44,6 +44,7 @@ class Attendance extends REST_Controller
         $this->db->select('*')->from('HRSTMATTENDANCEDATA');
         //$this->db->where('month(ATTENDANCEDATE)=05');
         $this->db->where('EMPLID', $this->get('EMPLID'));
+        $this->db->order_by('ATTENDANCEDATE', 'DESC');
         $get_attendance = $this->db->get();
         $user = $get_attendance->result_array();
     
@@ -53,8 +54,8 @@ class Attendance extends REST_Controller
         }
         else
         {
-            $this->response(array('error' => 'User could not be found'), 404);
-            //print_mz($this->db->last_query());
+            //$this->response(array('error' => 'User could not be found'), 404);
+            print_mz($this->db->last_query());
         }
     }
 }
