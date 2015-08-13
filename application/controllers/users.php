@@ -198,6 +198,27 @@ class Users extends REST_Controller
         }
     }
 
+    function atasan_by_posgroup_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_superior_by_posgroup($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+            //lastq();
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function bawahan_satu_bu_get()
     {   
         if(!$this->get('EMPLID'))
