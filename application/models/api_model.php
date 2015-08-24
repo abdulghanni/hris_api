@@ -282,10 +282,13 @@ function get_superior($emplid)
 
 	$id_cost = $this->get_cost_center_desc($emplid);
 	$id_org = $this->get_org_id($emplid);
+	$id_parentorg = $this->get_parentorg_id($emplid);
 	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
 	$id_cost = $id_cost['NUM'];
 	$id_org = $id_org['ORGANIZATIONID'];
-/*SELECT DISTINCT 
+	$id_parentorg = $id_parentorg['PARENTORGANIZATIONID'];
+	$id_bu = $this->get_empl_bu_id($emplid)['DIMENSION'];
+	/*SELECT DISTINCT 
 		EMPLOYEETABLE.EMPLID AS ID, 
 		EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
 		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
@@ -301,8 +304,10 @@ function get_superior($emplid)
 		JOIN DIMENSIONS AS DIMENSIONSTABLE ON DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_ 
 		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
 		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON VNHISTORYTABLE.HRSORGANIZATIONID = ORGANIZATIONTABLE.HRSORGANIZATIONID
 		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '2014-01-01 00:00:00')
-		AND EMPLOYEETABLE.DIMENSION2_ = '$id_cost'
+		AND (EMPLOYEETABLE.DIMENSION2_ = '$id_cost' OR EMPLOYEETABLE.DIMENSION2_ = '$id_parentorg' OR ORGANIZATIONTABLE.PARENTORGANIZATIONID = '$id_parentorg')
+		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
 		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade'
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
@@ -471,6 +476,32 @@ function get_org_id($emplid)
 	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
 
     $q = $this->db->get()->row_array('ORGANIZATIONID');
+
+    return $q;
+}
+
+function get_parentorg_id($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$this->db->distinct();
+	$this->db->select("ORGANIZATIONTABLE2.PARENTORGANIZATIONID AS PARENTORGANIZATIONID");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE2', 'VNTABLE2.REFERENCE = EMPLOYEETABLE2.EMPLID');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE2', 'VNHISTORYTABLE2.HRSVIRTUALNETWORKID = VNTABLE2.HRSVIRTUALNETWORKID');
+	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE2', 'ORGANIZATIONTABLE2.HRSORGANIZATIONID = VNHISTORYTABLE2.HRSORGANIZATIONID');
+	
+	
+	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
+	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
+
+    $q = $this->db->get()->row_array('PARENTORGANIZATIONID');
 
     return $q;
 }
