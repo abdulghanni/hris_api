@@ -810,13 +810,18 @@ class Users extends REST_Controller
 
     function edit_employee_post()
     {
+        $rep_email_char = array("%5Bat%5D","%5Bdot%5D");
+        $std_email_char = array("@",".");
+        
+        $email_post = str_replace($rep_email_char,$std_email_char,$this->get('SMS'));
+
         $data=array(
         'FIRSTNAME' => $this->get('FIRSTNAME'),
         'LASTNAME' => $this->get('LASTNAME'),
         'BIRTHDATE' => $this->get('BIRTHDATE'),
         'PHONE' => $this->get('PHONE'),
         'MARITALSTATUS' => $this->get('MARITALSTATUS'),
-        'SMS' => $this->get('SMS'),
+        'SMS' => $email_post,
         'PINBLACKBERRY' => $this->get('PINBLACKBERRY'),
          );
 
