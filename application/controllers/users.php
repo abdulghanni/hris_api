@@ -810,7 +810,7 @@ class Users extends REST_Controller
 
     function edit_employee_post()
     {
-        $rep_email_char = array("%5Bat%5D","%5Bdot%5D");
+        $rep_email_char = array("[at]","[dot]");
         $std_email_char = array("@",".");
         
         $email_post = str_replace($rep_email_char,$std_email_char,$this->get('SMS'));
@@ -835,7 +835,7 @@ class Users extends REST_Controller
         else  
         {  
              
-            $this->response(array('status' => $this->db->last_query()));
+            $this->response(array('status' => 'success'));
                
         }
 
