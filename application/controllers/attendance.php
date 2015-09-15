@@ -45,6 +45,7 @@ class Attendance extends REST_Controller
         //$this->db->where('month(ATTENDANCEDATE)=05');
         $this->db->where('EMPLID', $this->get('EMPLID'));
         $this->db->order_by('ATTENDANCEDATE', 'DESC');
+        $this->db->limit(30);
         $get_attendance = $this->db->get();
         $user = $get_attendance->result_array();
     

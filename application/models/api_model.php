@@ -426,7 +426,7 @@ function get_empl_bu_id($emplid)
 
 function get_empl_same_org($emplid)
 {
-	$id = $this->get_org_id($emplid);
+	/*$id = $this->get_org_id($emplid);
 	$id_cost = $this->get_cost_center_desc($emplid)['NUM'];
 	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
 	if(!empty($null_date_vnhistorytable)){
@@ -451,7 +451,49 @@ function get_empl_same_org($emplid)
 
     $q = $this->db->get()->result_array();
 
-    return $q;
+    return $q;*/
+
+    $null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$id_cost = $this->get_cost_center_desc($emplid);
+	$id_org = $this->get_org_id($emplid);
+	$id_parentorg = $this->get_parentorg_id($emplid);
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+	$id_cost = $id_cost['NUM'];
+	$id_org = $id_org['ORGANIZATIONID'];
+	$id_parentorg = $id_parentorg['PARENTORGANIZATIONID'];
+	$id_bu = $this->get_empl_bu_id($emplid)['DIMENSION'];
+	/*SELECT DISTINCT 
+		EMPLOYEETABLE.EMPLID AS ID, 
+		EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID 
+		WHERE ORGANIZATIONTABLE.HRSORGANIZATIONID = '$id_org' 
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade' 
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND VNHISTORYTABLE.ENDDATE = '$null_date_vnhistorytable'
+		UNION */
+	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN DIMENSIONS AS DIMENSIONSTABLE ON DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_ 
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID 
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID 
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON VNHISTORYTABLE.HRSORGANIZATIONID = ORGANIZATIONTABLE.HRSORGANIZATIONID
+		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '2014-01-01 00:00:00')
+		AND (EMPLOYEETABLE.DIMENSION2_ = '$id_cost' OR EMPLOYEETABLE.DIMENSION2_ = '$id_parentorg' OR ORGANIZATIONTABLE.PARENTORGANIZATIONID = '$id_parentorg')
+		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		");
+
+    	return $q->result_array();
 }
 
 function get_org_id($emplid)
@@ -770,7 +812,7 @@ function get_course($emplid)
 	function get_sisa_cuti($emplid)
 	{
 		$seniority_date = $this->db->where('EMPLID', $emplid)->get('HRSEMPLOYEETABLE')->row('SENIORITYDATE');
-		$y = date('Y')-1;
+		$y = date('Y');
 		//$y = 1900;
 		$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
 	    $endactivedate = date('Y-m-d', strtotime('+1 Year', strtotime($startactivedate)));

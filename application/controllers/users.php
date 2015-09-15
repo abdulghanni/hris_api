@@ -693,6 +693,26 @@ class Users extends REST_Controller
         }
     }
 
+    function last_leave_entitlement_id_get()
+    {
+        $this->db->select_max("IDLEAVEENTITLEMENT");
+        $this->db->select_max("RECID");
+        $this->db->select_max("RECVERSION");
+        $q = $this->db->get("HRSLEAVEENTITLEMENT");
+        
+        $users = $q->result_array();//$get_all_users->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function admin_asset_management_get()
     {
         $q = $this->db->select('EMPLOYEE.EMPLID, EMPLOYEE.NAME')
@@ -759,6 +779,63 @@ class Users extends REST_Controller
         }
 
     }
+
+    function insert_sisa_cuti_post()
+    {
+        $data=array(
+            'CURRCF' => $this->get('CURRCF'),
+            'ENDPERIODCF' => '1900-01-01 00:00:00.000',
+            'MAXENTITLEMENT' => $this->get('MAXENTITLEMENT'),
+            'MAXCF' => $this->get('MAXCF'),
+            'MAXADVANCE' => $this->get('MAXADVANCE'),
+            'ENTITLEMENT' => $this->get('ENTITLEMENT'),
+            'STARTACTIVEDATE' => $this->get('STARTACTIVEDATE').' 00:00:00.000',
+            'ENDACTIVEDATE' => $this->get('ENDACTIVEDATE').' 00:00:00.000',
+            'IDLEAVEENTITLEMENT' => $this->get('IDLEAVEENTITLEMENT'),
+            'HRSLEAVETYPEID' => $this->get('HRSLEAVETYPEID'),
+            'CASHABLEFLAG' => $this->get('CASHABLEFLAG'),
+            'EMPLID' => $this->get('EMPLID'),
+            'ENTADJUSTMENT' => '0',
+            'CFADJUSTMENT' => $this->get('CFADJUSTMENT'),
+            'ISCASHABLERESIGN' => $this->get('ISCASHABLERESIGN'),
+            'PAYROLLRESIGNFLAG' => $this->get('PAYROLLRESIGNFLAG'),
+            'FIRSTCALCULATIONDATE' => '1900-01-01 00:00:00.000',
+            'MATANG' => $this->get('MATANG'),
+            'PAYMENTLEAVEFLAG' => $this->get('PAYMENTLEAVEFLAG'),
+            'PAYMENTLEAVEAMOUNT' => $this->get('PAYMENTLEAVEAMOUNT'),
+            'SPMID' => $this->get('SPMIDSPM'),
+            'LASTGENERATEDATE' => '1900-01-01 00:00:00.000',
+            'ISSPM' => $this->get('ISSPM'),
+            'BASEDONMARITALSTATUS' => $this->get('BASEDONMARITALSTATUS'),
+            'BASEDONSALARY' => $this->get('BASEDONSALARY'),
+            'CASHABLEREQUESTFLAG' => $this->get('CASHABLEREQUESTFLAG'),
+            'PAYROLPAYMENTLEAVEFLAG' => $this->get('PAYROLPAYMENTLEAVEFLAG'),
+            'TGLMATANG' => '1900-01-01 00:00:00.000',
+            'MODIFIEDBY' => $this->get('MODIFIEDBY'),
+            'CREATEDBY' => $this->get('CREATEDBY'),
+            'DATAAREAID' => $this->get('DATAAREAID'),
+            'RECVERSION' => $this->get('RECVERSION'),
+            'RECID' => $this->get('RECID'),
+            'HRSEMPLGROUPID' => $this->get('HRSEMPLGROUPID'),
+            'BRANCHID' => $this->get('BRANCHID'),
+            'ERL_LEAVECF' => $this->get('ERL_LEAVECF'),
+         );
+
+        $result = $this->db->insert('HRSLEAVEENTITLEMENT', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
+    }
+
 
     function leave_request_post()
     {
