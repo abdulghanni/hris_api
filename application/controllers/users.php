@@ -795,7 +795,7 @@ class Users extends REST_Controller
             'HRSLEAVETYPEID' => $this->get('HRSLEAVETYPEID'),
             'CASHABLEFLAG' => $this->get('CASHABLEFLAG'),
             'EMPLID' => $this->get('EMPLID'),
-            'ENTADJUSTMENT' => '0',
+            'ENTADJUSTMENT' => $this->get('ENTADJUSTMENT'),
             'CFADJUSTMENT' => $this->get('CFADJUSTMENT'),
             'ISCASHABLERESIGN' => $this->get('ISCASHABLERESIGN'),
             'PAYROLLRESIGNFLAG' => $this->get('PAYROLLRESIGNFLAG'),
