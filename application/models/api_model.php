@@ -214,7 +214,8 @@ function get_superior_by_bu($emplid)
 		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  >= '$id_grade'  
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
-		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		AND EMPLOYEETABLE.EMPLID != '$emplid'
+		ORDER BY EMPLOYEETABLE.NAME ASC;
 		");
 
     	return $q->result_array();
@@ -240,7 +241,7 @@ function get_bawahan_by_bu($emplid)
 		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  <= '$id_grade'  
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
-		AND EMPLOYEETABLE.EMPLID != '$emplid' ORDER BY EMPLOYEETABLE.NAME ASC;
+		ORDER BY EMPLOYEETABLE.NAME ASC;
 		");
 
     	return $q->result_array();
@@ -265,7 +266,7 @@ function get_emp_by_bu($emplid)
 		AND EMPLOYEETABLE.DIMENSION = '$id_bu' 
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
-		AND EMPLOYEETABLE.EMPLID != '$emplid' ORDER BY EMPLOYEETABLE.NAME ASC;
+		ORDER BY EMPLOYEETABLE.NAME ASC;
 		");
 
     	return $q->result_array();
@@ -311,7 +312,8 @@ function get_superior($emplid)
 		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade'
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
-		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		AND EMPLOYEETABLE.EMPLID != '$emplid'
+		ORDER BY EMPLOYEETABLE.NAME ASC;
 		");
 
     	return $q->result_array();
@@ -490,7 +492,7 @@ function get_empl_same_org($emplid)
 		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
-		AND EMPLOYEETABLE.EMPLID != '$emplid';
+		ORDER BY EMPLOYEETABLE.NAME ASC
 		");
 
     	return $q->result_array();
