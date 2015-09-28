@@ -15,6 +15,56 @@ class api_model extends CI_Model {
 
 	}
 
+	function get_hrd_list($buid)
+	{
+
+
+	$org_hrd = $this->get_hrd();
+	$this->db->distinct();
+	$this->db->select("EMPLOYEETABLE.EMPLID,EMPLOYEETABLE.NAME");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE");
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE', 'VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID', 'left');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE', 'VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID','left');
+	$this->db->join('HRSPOSITION AS POSITIONTABLE', 'POSITIONTABLE.HRSPOSITIONID = VNHISTORYTABLE.HRSPOSITIONID','left');
+	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE', 'ORGANIZATIONTABLE.HRSORGANIZATIONID = VNHISTORYTABLE.HRSORGANIZATIONID','left');
+	$this->db->join('DIMENSIONS as BU', 'BU.NUM = EMPLOYEETABLE.DIMENSION', 'left');
+	$this->db->join('DIMENSIONS AS COSTCENTER', 'COSTCENTER.NUM = EMPLOYEETABLE.DIMENSION2_','left');
+	
+	$this->db->where('EMPLOYEETABLE.DIMENSION', $buid);
+	$this->db->where('EMPLOYEETABLE.STATUS !=', 2);
+	$this->db->where('EMPLOYEETABLE.HRSACTIVEINACTIVE !=', 1);
+	$this->db->like('POSITIONTABLE.DESCRIPTION', 'HR');
+	//$this->db->like('ORGANIZATIONTABLE.DESCRIPTION', 'HR');
+
+
+	//$this->db->where('EMPLOYEETABLE.STATUS !=', 2);
+	//$this->db->where('EMPLOYEETABLE.HRSACTIVEINACTIVE !=', 1);
+	//$this->db->where('DIMENSION', $buid);
+
+	//for($i=0;$i<sizeof($org_hrd);$i++):
+	//$this->db->or_where('DIMENSION2_', $org_hrd[$i]['HRSORGANIZATIONID']);
+	//endfor;
+
+	//$this->db->where("(EMPLOYEETABLE.DIMENSION= '$buid' AND EMPLOYEETABLE.STATUS != 2 AND EMPLOYEETABLE.HRSACTIVEINACTIVE !=1)",null, false);
+	
+    $q = $this->db->get()->result_array();
+    return $q;
+	}
+
+	function get_hrd()
+	{
+		$this->db->select('HRSORGANIZATION.HRSORGANIZATIONID, HRSPOSITIONID');
+
+		$this->db->from('HRSORGANIZATION');
+		$this->db->from('HRSPOSITION');
+
+		$this->db->like('HRSORGANIZATION.DESCRIPTION', 'hr');
+		$this->db->like('HRSPOSITION.DESCRIPTION', 'hr');
+
+		 $q = $this->db->get()->result_array();
+    	return $q;
+	}
+
 	function get_bu()
 {
 	$this->db->distinct();

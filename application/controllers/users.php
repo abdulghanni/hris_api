@@ -918,10 +918,68 @@ class Users extends REST_Controller
 
     }
 
+    function hrd_list_get($buid)
+    {
+        if(!$this->get('BUID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $buid = $this->get('BUID');
+        $users = $this->api_model->get_hrd_list($buid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function hrd_get()
+    {
+        $users = $this->api_model->get_hrd();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function type_cuti_get()
     {
         $users = $this->api_model->get_type_cuti();
         
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function location_desc_get()
+    {
+        if(!$this->get('LOCID'))
+        {
+            $this->response(NULL, 400);
+        }
+
+        $LOCID = getValue('DESCRIPTION', 'HRSLOCATION', array('HRSLOCATIONID'=>'where/'.$this->get('LOCID')));
+
+        $users =  strtok($LOCID, " ");
+
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
