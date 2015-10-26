@@ -42,7 +42,7 @@ class Users extends REST_Controller
 	
 	function lists_get()
     {	
-		$this->db->select("EMPLID");
+		$this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl');
 		$q = $this->db->get("HRSEMPLOYEETABLE");
 		
         $users = $q->result_array();//$get_all_users->result_array();
@@ -961,6 +961,28 @@ class Users extends REST_Controller
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function location_by_bu_get()
+    {
+        if(!$this->get('BU'))
+       {
+        $this->response(NULL, 400);
+       }
+       $BU = $this->get('BU');
+        //$users = getValue('DESCRIPTION', 'HRSLOCATION', array('BRANCHID'=>'WHERE/'.$this->get('bu')));
+        $q = $this->db->query("SELECT HRSLOCATIONID,DESCRIPTION FROM HRSLOCATION WHERE SUBSTRING(BRANCHID, 1, 2) = '$BU'");
+        $users = $q->result_array();
+
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP r
         }
 
         else
