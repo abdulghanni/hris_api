@@ -113,6 +113,27 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
+
+    function user_in_org_get()
+    {
+        if(!$this->get('ORGID'))
+        {
+            $this->response(NULL, 400);
+        }
+
+        //$users = $this->api_model->get_user_in_org('50414000');
+        $users = $this->api_model->get_user_in_org($this->get('ORGID'));
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
 	
 	 function org_get()
     {   

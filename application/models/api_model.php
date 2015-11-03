@@ -17,8 +17,6 @@ class api_model extends CI_Model {
 
 	function get_hrd_list($buid)
 	{
-
-
 	$org_hrd = $this->get_hrd();
 	$this->db->distinct();
 	$this->db->select("EMPLOYEETABLE.EMPLID,EMPLOYEETABLE.NAME");
@@ -440,7 +438,7 @@ function get_empl_same_org($emplid)
 		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID and VNTABLE.DATAAREAID=VNHISTORYTABLE.DATAAREAID
 		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON VNHISTORYTABLE.HRSORGANIZATIONID = ORGANIZATIONTABLE.HRSORGANIZATIONID and VNHISTORYTABLE.DATAAREAID=ORGANIZATIONTABLE.DATAAREAID
 		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '$year-01-01 00:00:00')
-		AND (EMPLOYEETABLE.DIMENSION2_ = '$id_cost' OR EMPLOYEETABLE.DIMENSION2_ = '$id_parentorg' OR ORGANIZATIONTABLE.PARENTORGANIZATIONID = '$id_parentorg')
+		AND (EMPLOYEETABLE.DIMENSION2_ = '$id_org' OR EMPLOYEETABLE.DIMENSION2_ = '$id_parentorg' OR ORGANIZATIONTABLE.PARENTORGANIZATIONID = '$id_parentorg')
 		AND EMPLOYEETABLE.DIMENSION = '$id_bu'
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
@@ -450,6 +448,22 @@ function get_empl_same_org($emplid)
 
     	return $q->result_array();
 }
+
+function get_user_in_org($orgid)
+{
+	$parentorgid = $this->get_parent_from_org($orgid)['PARENTORGANIZATIONID'];
+	$parent = $this->get_org_from_parent_org($parentorgid);
+	$this->db->select('EMPLID, NAME')->FROM('HRSEMPLOYEETABLE')->WHERE('DIMENSION2_', $orgid);
+	foreach ($parent as $key => $value) {
+		$this->db->or_where('DIMENSION2_', $value['ID']);
+	}
+	$q = $this->db->get(); 
+	
+
+    return $q->result_array();
+}
+
+
 
 function get_org_id($emplid)
 {
@@ -501,6 +515,15 @@ function get_parentorg_id($emplid)
     $q = $this->db->get()->row_array('PARENTORGANIZATIONID');
 
     return $q;
+}
+
+function get_parent_from_org($orgid)
+{
+	$this->db->select('PARENTORGANIZATIONID')->from('HRSORGANIZATION')->where('HRSORGANIZATIONID', $orgid)->where('DATAAREAID', 'erl');
+	$q = $this->db->get()->row_array('PARENTORGANIZATIONID');
+
+    return $q;
+
 }
 
 function get_grade($emplid)
