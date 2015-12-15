@@ -629,7 +629,7 @@ function get_org_from_bu($buid)
 function get_pos_from_org($orgid)
 {
 	$this->db->distinct();
-	$this->db->select('POSITION.HRSPOSITIONID AS ID, POSITION.DESCRIPTION AS DESCRIPTION');
+	$this->db->select('POSITION.HRSPOSITIONID AS ID, POSITION.DESCRIPTION AS DESCRIPTION, POSITION.HRSPOSITIONGROUPID AS POSITIONGROUP, HRSPOSITIONTYPEID AS TYPE');
 	$this->db->from('HRSPOSITION AS POSITION');
 
 	$this->db->where('POSITION.HRSORGANIZATIONID', $orgid);

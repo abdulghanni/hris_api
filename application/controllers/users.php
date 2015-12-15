@@ -694,6 +694,27 @@ class Users extends REST_Controller
         }
     }
 
+    function pos_detail_get()
+    {
+        if(!$this->get('POSID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $posid = $this->get('POSID');
+        $users = getAll('HRSPOSITION', array('HRSPOSITIONID'=>'where/'.$posid))->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function last_leave_request_id_get()
     {
         $this->db->select_max("IDLEAVEREQUEST");
