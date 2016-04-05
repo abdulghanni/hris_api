@@ -9,12 +9,6 @@ class api_model extends CI_Model {
 		parent::__construct();
 	}
 
-    function get_data($select, $table){         
-        $query = 'SELECT '.$select.' FROM '.$table;  
-        return $this->db->query($query);  
-
-	}
-
 	function get_hrd_list($buid)
 	{
 	$org_hrd = $this->get_hrd();
@@ -59,6 +53,8 @@ class api_model extends CI_Model {
 
 		$this->db->like('HRSORGANIZATION.DESCRIPTION', 'hr');
 		$this->db->like('HRSPOSITION.DESCRIPTION', 'hr');
+		$this->db->where('HRSORGANIZATION.DATAAREAID', 'erl');
+		$this->db->where('HRSPOSITION.DATAAREAID', 'erl');
 
 		 $q = $this->db->get()->result_array();
     	return $q;
@@ -88,7 +84,7 @@ class api_model extends CI_Model {
 
 		$this->db->where('EMPLOYEE.STATUS !=', 2);
 		$this->db->where('EMPLOYEE.HRSACTIVEINACTIVE !=', 1);
-
+		$this->db->where('EMPLOYEE.DATAAREAID', 'erl');
 		$q = $this->db->get()->result_array();
 
 		return $q;
@@ -165,6 +161,7 @@ function get_new_recversion($emplid, $tablename)
 
 
     $this->db->where('EMPLID', $emplid);
+    $this->db->where('DATAAREAID', 'erl');
     $q = $this->db->get($tablename);
 
     return $q->row('RECVERSION');
@@ -363,7 +360,7 @@ function get_parent_org_from_bu($buid)
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
 
 	$this->db->where('ORGANIZATION.DIMENSION', $buid);
-
+	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -376,7 +373,7 @@ function get_org_from_parent_org($orgid)
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
 
 	$this->db->where('ORGANIZATION.PARENTORGANIZATIONID', $orgid);
-
+	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -406,7 +403,7 @@ function get_empl_bu_id($emplid)
 	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
 	
 	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
-
+	$this->db->where('EMPLOYEETABLE2.DATAAREAID', 'erl');
     $q = $this->db->get()->row_array('DIMENSION');
 
     return $q;
@@ -453,7 +450,7 @@ function get_user_in_org($orgid)
 {
 	$parentorgid = $this->get_parent_from_org($orgid)['PARENTORGANIZATIONID'];
 	$parent = $this->get_org_from_parent_org($parentorgid);
-	$this->db->select('EMPLID, NAME')->FROM('HRSEMPLOYEETABLE')->WHERE('DIMENSION2_', $orgid);
+	$this->db->select('EMPLID, NAME')->FROM('HRSEMPLOYEETABLE')->WHERE('DIMENSION2_', $orgid)->WHERE('HRSEMPLOYEETABLE.DATAAREAID', 'erl');
 	foreach ($parent as $key => $value) {
 		$this->db->or_where('DIMENSION2_', $value['ID']);
 	}
@@ -557,7 +554,7 @@ function get_all_org()
 	$this->db->distinct();
 	$this->db->select('ORGANIZATION.HRSORGANIZATIONID AS ID, ORGANIZATION.DESCRIPTION AS DESCRIPTION');
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
-
+	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -568,7 +565,7 @@ function get_all_pos()
 	$this->db->distinct();
 	$this->db->select('POSITION.HRSPOSITIONID AS ID, POSITION.DESCRIPTION AS DESCRIPTION');
 	$this->db->from('HRSPOSITION AS POSITION');
-
+	$this->db->where('POSITION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -581,7 +578,7 @@ function get_bu_name($bu_id)
 	$this->db->from('DIMENSIONS');
 
 	$this->db->where('DIMENSIONS.NUM', $bu_id);
-
+	$this->db->where('DIMENSIONS.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -594,7 +591,7 @@ function get_org_name($org_id)
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
 
 	$this->db->where('ORGANIZATION.HRSORGANIZATIONID', $org_id);
-
+	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -607,7 +604,7 @@ function get_pos_name($pos_id)
 	$this->db->from('HRSPOSITION AS POSITION');
 
 	$this->db->where('POSITION.HRSPOSITIONID', $pos_id);
-
+	$this->db->where('POSITION.DATAAREAID', 'erl');
 	$q = $this->db->get()->result_array();
 
 	return $q;
@@ -620,6 +617,7 @@ function get_org_from_bu($buid)
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
 
 	$this->db->where('ORGANIZATION.DIMENSION', $buid);
+	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
 
 	$q = $this->db->get()->result_array();
 
@@ -633,6 +631,7 @@ function get_pos_from_org($orgid)
 	$this->db->from('HRSPOSITION AS POSITION');
 
 	$this->db->where('POSITION.HRSORGANIZATIONID', $orgid);
+	$this->db->where('POSITION.DATAAREAID', 'erl');
 
 	$q = $this->db->get()->result_array();
 
@@ -822,12 +821,19 @@ function get_course($emplid)
 	{
 		$this->db->select('HRSLEAVETYPEID, DESCRIPTION');
 		$this->db->from('HRSLEAVETYPE');
+		$this->db->where('HRSLEAVETYPE.DATAAREAID', 'erl');
 
 		$q = $this->db->get()->result_array();
 
 		return $q;
 	}
 
+	
 
+    function get_data($select, $table){         
+        $query = 'SELECT '.$select.' FROM '.$table;  
+        return $this->db->query($query);  
+
+	}
 }
 ?>
