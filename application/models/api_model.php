@@ -736,7 +736,7 @@ function get_course($emplid)
 		
 		$this->db->where('STITABLE.DATAAREAID', 'erl');
 		$this->db->where('STITABLE.EMPLID', $emplid);
-		$this->db->where('STITABLE.AKTIFASIDATE', 'DESC');
+		//$this->db->where('STITABLE.AKTIFASIDATE', 'DESC');
         $q = $this->db->get()->result_array();
 
         return $q;
