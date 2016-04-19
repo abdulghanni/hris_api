@@ -798,8 +798,14 @@ function get_course($emplid)
 	function get_sisa_cuti($emplid)
 	{
 		$seniority_date = $this->db->where('EMPLID', $emplid)->get('HRSEMPLOYEETABLE')->row('SENIORITYDATE');
-		$y = date('Y');
-		//$y = 1900;
+		//die("die".date("d-m",now()));
+		if(date("m-d", strtotime($seniority_date)) > date("m-d", now())){
+		$y = date('Y')-1;
+		}else{
+			$y = date('Y');
+		}
+		//print_mz($y);
+		//$y = 2015 ;
 		$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
 	    $endactivedate = date('Y-m-d', strtotime('+1 Year', strtotime($startactivedate)));
 	    $endactivedate = date('Y-m-d', strtotime('-1 Day', strtotime($endactivedate)));
