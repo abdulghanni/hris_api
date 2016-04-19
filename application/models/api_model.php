@@ -68,7 +68,7 @@ class api_model extends CI_Model {
 
 	$this->db->join('DIMENSIONS as DIMENSIONSTABLE', 'DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION and EMPLOYEETABLE.DATAAREAID=DIMENSIONSTABLE.DATAAREAID', 'left');
 	$this->db->where('EMPLOYEETABLE.DATAAREAID', 'erl');
-	$this->db->order_by('DESCRIPTION', 'asc');
+	$this->db->order_by('NUM', 'asc');
 
 	$q = $this->db->get()->result_array();
 
