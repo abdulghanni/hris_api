@@ -333,6 +333,34 @@ function get_superior($emplid)
     	return $q->result_array();
 }
 
+function get_superior_by_grade($emplid)
+{
+	$year = date('Y');
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
+
+	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE 
+		JOIN DIMENSIONS AS DIMENSIONSTABLE ON DIMENSIONSTABLE.NUM = EMPLOYEETABLE.DIMENSION2_ and EMPLOYEETABLE.DATAAREAID=DIMENSIONSTABLE.DATAAREAID
+		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID and EMPLOYEETABLE.DATAAREAID=VNTABLE.DATAAREAID
+		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID and VNTABLE.DATAAREAID=VNHISTORYTABLE.DATAAREAID
+		JOIN HRSORGANIZATION AS ORGANIZATIONTABLE ON VNHISTORYTABLE.HRSORGANIZATIONID = ORGANIZATIONTABLE.HRSORGANIZATIONID and VNHISTORYTABLE.DATAAREAID=ORGANIZATIONTABLE.DATAAREAID
+		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '$year-01-01 00:00:00')
+		AND RIGHT(VNHISTORYTABLE.HRSGRADEID,1)  > '$id_grade'
+		AND EMPLOYEETABLE.STATUS != 2 
+		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
+		AND EMPLOYEETABLE.DATAAREAID = 'erl'
+		ORDER BY EMPLOYEETABLE.NAME ASC;
+		");
+
+    	return $q->result_array();
+}
+
 function get_cost_center($emplid)
 {
 	$id = $this->get_cost_center_desc($emplid);

@@ -219,6 +219,28 @@ class Users extends REST_Controller
         }
     }
 
+    
+    function superior_by_grade_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_superior_by_grade($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function atasan_by_posgroup_get()
     {   
         if(!$this->get('EMPLID'))
