@@ -18,6 +18,21 @@ require APPPATH.'/libraries/REST_Controller.php';
 
 class Kontrak extends REST_Controller
 {
+
+    function lists_get()
+    {
+        $q = $this->db->select('*')->get('HRSEMPLHIRINGTERMS');
+        $user = $q->result_array();
+        if($user)
+        {
+            $this->response($user, 200); // 200 being the HTTP response code
+        }
+        else
+        {
+            $this->response(array('error' => 'User could not be found'), 404);
+            //print_mz($user);
+        }
+    }
     function list_get()
     {
     	if(!$this->get('EMPLID'))

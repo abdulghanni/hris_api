@@ -779,7 +779,9 @@ class Users extends REST_Controller
     }
 
     function sisa_cuti_get()
-    {
+    {      //$emplid = "P0501";
+        //$users = $this->api_model->get_sisa_cuti($emplid);print_mz($users);
+    //$users = getAll("HRSLEAVEENTITLEMENT", array("EMPLID"=>'WHERE/P0389'))->RESULT();print_mz($users);
         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
@@ -1047,6 +1049,25 @@ class Users extends REST_Controller
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function holiday_get()
+    {
+        
+        //$BU = $this->get('BU');
+        //$users = getValue('DESCRIPTION', 'HRSLOCATION', array('BRANCHID'=>'WHERE/'.$this->get('bu')));
+        $q = $this->db->query("SELECT * FROM HRSTMHolidayCalendarDetail order by HOLIDAYDATE desc");
+        $users = $q->result_array();
+
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP r
         }
 
         else
