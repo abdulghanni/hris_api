@@ -59,4 +59,76 @@ class Attendance extends REST_Controller
             print_mz($this->db->last_query());
         }
     }
+
+    function dashboard_get()
+    {
+        $emplid = $this->get('EMPLID');
+        $month = $this->get('MONTH');
+        $year = $this->get('YEAR');
+
+        $hadir = $this->get_hadir($emplid, $month, $year);
+        $tidak_hadir = $this->get_tidak_hadir($emplid,$month,$year);
+        $cuti = $this->get_cuti($emplid,$month,$year);
+        $telat = $this->get_telat($emplid,$month,$year);
+        $max_date = $this->get_max_date($emplid,$month,$year);
+        $data = array(
+                'hadir' => $hadir,
+                'tidak_hadir' => $tidak_hadir,
+                'cuti'=>$cuti,
+                'telat'=>$telat,
+                'max_date'=>$max_date
+            );
+    
+        if(!empty($data))
+        {
+            $this->response($data, 200); // 200 being the HTTP response code
+        }
+        else
+        {
+            $this->response(array('error' => 'User could not be found'), 404);
+            //print_mz($this->db->last_query());
+        }
+    }
+
+    function get_hadir($emplid,$month,$year){
+        $this->db->where('EMPLID', $emplid)
+        ->where('month(ATTENDANCEDATE)='.$month)
+        ->where('year(ATTENDANCEDATE)='.$year)
+        ->where('ATTENDANCESTATUS', 1);
+        return $this->db->get('HRSTMATTENDANCEDATA')->num_rows();
+    }
+
+    function get_tidak_hadir($emplid,$month,$year){
+        $this->db->where('EMPLID', $emplid)
+        ->where('month(ATTENDANCEDATE)='.$month)
+        ->where('year(ATTENDANCEDATE)='.$year)
+        ->where('ATTENDANCESTATUS', 2)
+        ->where('ABSENCESTATUS', 9);
+        return $this->db->get('HRSTMATTENDANCEDATA')->num_rows();
+    }
+
+    function get_telat($emplid,$month,$year){
+        $this->db->where('EMPLID', $emplid)
+        ->where('month(ATTENDANCEDATE)='.$month)
+        ->where('year(ATTENDANCEDATE)='.$year)
+        ->where('ABSENCESTATUS', 18);
+        return $this->db->get('HRSTMATTENDANCEDATA')->num_rows();
+    }
+
+    function get_max_date($emplid,$month,$year)
+    {
+        $this->db->select_max('ATTENDANCEDATE')
+        ->where('EMPLID', $emplid)
+        ->where('month(ATTENDANCEDATE)='.$month)
+        ->where('year(ATTENDANCEDATE)='.$year);
+        return $this->db->get('HRSTMATTENDANCEDATA')->row()->ATTENDANCEDATE;
+    }
+
+
+    function get_cuti($emplid,$month,$year){
+        $this->db->select_sum("TOTALLEAVEDAYS")
+        ->where('EMPLID', $emplid)
+        ->where('year(LEAVEDATEFROM)='.$year);
+        return $this->db->get('HRSLEAVEREQUEST')->row()->TOTALLEAVEDAYS;
+    }
 }
