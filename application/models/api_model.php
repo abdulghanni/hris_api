@@ -271,22 +271,16 @@ function get_bawahan_by_bu($emplid)
 
 function get_emp_by_bu($emplid)
 {
-	$year = date('Y');
-	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
-	if(!empty($null_date_vnhistorytable)){
-		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
-	}else{
-		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
-	}
-
 	$id_bu = $this->get_empl_bu_id($emplid)['DIMENSION'];
+	$id_bu = "'$id_bu'";
+	if($id_bu == '50'){
+		$id_bu = "'50','51'";
+	}
 	//$id_grade = substr($this->get_grade($emplid)['HRSGRADEID'],2);
 
 	$q = $this->db->query("SELECT DISTINCT EMPLOYEETABLE.EMPLID AS ID, EMPLOYEETABLE.NAME FROM HRSEMPLOYEETABLE AS EMPLOYEETABLE  
-		JOIN HRSVIRTUALNETWORKTABLE AS VNTABLE ON VNTABLE.REFERENCE = EMPLOYEETABLE.EMPLID and EMPLOYEETABLE.DATAAREAID=VNTABLE.DATAAREAID
-		JOIN HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE ON VNHISTORYTABLE.HRSVIRTUALNETWORKID = VNTABLE.HRSVIRTUALNETWORKID and VNHISTORYTABLE.DATAAREAID=VNTABLE.DATAAREAID
-		WHERE (VNHISTORYTABLE.ENDDATE = '1900-01-01 00:00:00.000' OR VNHISTORYTABLE.ENDDATE >= '$year-01-01 00:00:00')
-		AND EMPLOYEETABLE.DIMENSION = '$id_bu' 
+		
+		WHERE EMPLOYEETABLE.DIMENSION in ($id_bu) 
 		AND EMPLOYEETABLE.STATUS != 2 
 		AND EMPLOYEETABLE.HRSACTIVEINACTIVE != 1
 		AND EMPLOYEETABLE.DATAAREAID = 'erl'

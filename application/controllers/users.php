@@ -1097,4 +1097,21 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
+
+    function user_bu_get(){
+        if(!$this->get('EMPLID'))
+            {
+                $this->response(NULL, 400);
+            }
+        $bu = getValue('DIMENSION', 'HRSEMPLOYEETABLE', array('EMPLID'=>'where/'.$this->get('EMPLID')));
+
+        if($bu)
+        {
+            $this->response($bu, 200); // 200 being the HTTP r
+        }
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
 }
