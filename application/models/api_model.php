@@ -571,6 +571,33 @@ function get_grade($emplid)
     return $q;
 }
 
+function get_user_position($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$this->db->distinct();
+	$this->db->select("POSITIONTABLE.DESCRIPTION AS POSITION");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE2', 'VNTABLE2.REFERENCE = EMPLOYEETABLE2.EMPLID and VNTABLE2.DATAAREAID=EMPLOYEETABLE2.DATAAREAID');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE2', 'VNHISTORYTABLE2.HRSVIRTUALNETWORKID = VNTABLE2.HRSVIRTUALNETWORKID and VNHISTORYTABLE2.DATAAREAID=VNTABLE2.DATAAREAID');
+	$this->db->join('HRSPOSITION AS POSITIONTABLE', 'POSITIONTABLE.HRSPOSITIONID = VNHISTORYTABLE2.HRSPOSITIONID and VNHISTORYTABLE2.DATAAREAID=POSITIONTABLE.DATAAREAID','left');
+
+	$this->db->where('EMPLOYEETABLE2.DATAAREAID', 'erl');
+	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
+	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
+	
+
+    $q = $this->db->get()->row_array('POSITION');
+
+    return $q;
+}
+
 function get_all_org()
 {
 	$this->db->distinct();
