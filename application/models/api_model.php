@@ -510,6 +510,32 @@ function get_org_id($emplid)
     return $q;
 }
 
+function get_user_org($emplid)
+{
+	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';
+	if(!empty($null_date_vnhistorytable)){
+		$null_date_vnhistorytable = $this->get_null_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}else{
+		$null_date_vnhistorytable = $this->get_max_enddate_vnhistorytable($emplid)['ENDDATE'];
+	}
+
+	$this->db->distinct();
+	$this->db->select("ORGANIZATIONTABLE2.DESCRIPTION AS ORGANIZATION");
+	$this->db->from("HRSEMPLOYEETABLE AS EMPLOYEETABLE2");
+
+	$this->db->join('HRSVIRTUALNETWORKTABLE AS VNTABLE2', 'VNTABLE2.REFERENCE = EMPLOYEETABLE2.EMPLID and VNTABLE2.DATAAREAID=EMPLOYEETABLE2.DATAAREAID');
+	$this->db->join('HRSVIRTUALNETWORKHISTORY AS VNHISTORYTABLE2', 'VNHISTORYTABLE2.HRSVIRTUALNETWORKID = VNTABLE2.HRSVIRTUALNETWORKID and VNHISTORYTABLE2.DATAAREAID=VNTABLE2.DATAAREAID');
+	$this->db->join('HRSORGANIZATION AS ORGANIZATIONTABLE2', 'ORGANIZATIONTABLE2.HRSORGANIZATIONID = VNHISTORYTABLE2.HRSORGANIZATIONID and ORGANIZATIONTABLE2.DATAAREAID=VNHISTORYTABLE2.DATAAREAID');
+	
+	$this->db->where('EMPLOYEETABLE2.DATAAREAID', 'erl');
+	$this->db->where('EMPLOYEETABLE2.EMPLID', $emplid);
+	$this->db->where('VNHISTORYTABLE2.ENDDATE', $null_date_vnhistorytable);
+
+    $q = $this->db->get()->row_array('ORGANIZATION');
+
+    return $q;
+}
+
 function get_parentorg_id($emplid)
 {
 	$null_date_vnhistorytable = (!empty($this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']))?$this->get_null_enddate_vnhistorytable($emplid)['ENDDATE']:'';

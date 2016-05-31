@@ -261,6 +261,28 @@ class Users extends REST_Controller
         }
     }
 
+    function user_org_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_user_org($emplid)['ORGANIZATION'];
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+
     function user_position_get()
     {   
         if(!$this->get('EMPLID'))
