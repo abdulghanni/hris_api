@@ -886,6 +886,28 @@ class Users extends REST_Controller
         }
     }
 
+    function update_flag_cuti_post()
+    {
+        $data=array(
+        'STATUSFLAG' => $this->get('status_id'),
+         );
+
+        $this->db->where('EMPLID', $this->get('nik'))->WHERE('LEAVEDATEFROM', $this->get('date'))->WHERE('LEAVEDATETO', $this->get('end_date'));
+        $result = $this->db->update('HRSLEAVEREQUEST', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
+    }
+
     function sisa_cuti_post()
     {
         $data=array(
