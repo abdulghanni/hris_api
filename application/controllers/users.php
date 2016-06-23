@@ -1199,4 +1199,19 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
+
+    function last_leave_number_sequence_get()
+    {
+        $users = getValue('NEXTREC', 'NUMBERSEQUENCETABLE', array('NUMBERSEQUENCE'=>'WHERE/HCT'));
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
 }
