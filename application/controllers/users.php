@@ -18,8 +18,8 @@ require APPPATH.'/libraries/REST_Controller.php';
 
 class Users extends REST_Controller
 {
-	
-	function list_get()
+    
+    function list_get()
     {
         if(!$this->get('EMPLID'))
         {
@@ -39,14 +39,14 @@ class Users extends REST_Controller
             $this->response(array('error' => 'User could not be found'), 404);
         }
     }
-	
-	function lists_get()
-    {	
-		$this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl');
-		$q = $this->db->get("HRSEMPLOYEETABLE");
-		
+    
+    function lists_get()
+    {   
+        $this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl');
+        $q = $this->db->get("HRSEMPLOYEETABLE");
+        
         $users = $q->result_array();//$get_all_users->result_array();
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -57,16 +57,16 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	function all_get()
-    {	
-		$this->db->select("EMPLID,NAME");
-		$this->db->where("HRSACTIVEINACTIVE = 0");
-		$this->db->where("STATUS = 1");
-		$q = $this->db->get("HRSEMPLOYEETABLE");
-		
+    
+    function all_get()
+    {   
+        $this->db->select("EMPLID,NAME");
+        $this->db->where("HRSACTIVEINACTIVE = 0");
+        $this->db->where("STATUS = 1");
+        $q = $this->db->get("HRSEMPLOYEETABLE");
+        
         $users = $q->result_array();//$get_all_users->result_array();
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -92,10 +92,10 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	function employement_get()
-    {	
-		if(!$this->get('EMPLID'))
+    
+    function employement_get()
+    {   
+        if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
@@ -134,8 +134,8 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	 function org_get()
+    
+     function org_get()
     {   
         if(!$this->get('EMPLID'))
         {
@@ -155,8 +155,8 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	function cost_get()
+    
+    function cost_get()
     {   
         if(!$this->get('EMPLID'))
         {
@@ -366,10 +366,10 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	function award_get()
-	{
-		if(!$this->get('EMPLID'))
+    
+    function award_get()
+    {
+        if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
@@ -386,12 +386,12 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	function course_get()
-	{
-		
-		 if(!$this->get('EMPLID'))
+    }
+    
+    function course_get()
+    {
+        
+         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
@@ -408,19 +408,19 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	function certificate_get()
-	{
-		
-		 if(!$this->get('EMPLID'))
+    }
+    
+    function certificate_get()
+    {
+        
+         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
-		
-		$emplid = $this->get('EMPLID');
+        
+        $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_certificate($emplid);
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -430,19 +430,19 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	function education_get()
-	{
-		
-		 if(!$this->get('EMPLID'))
+    }
+    
+    function education_get()
+    {
+        
+         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
-		
-		$emplid = $this->get('EMPLID');
+        
+        $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_education($emplid);
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -452,19 +452,19 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	function experience_get()
-	{
-		
-		 if(!$this->get('EMPLID'))
+    }
+    
+    function experience_get()
+    {
+        
+         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
-		
-		$emplid = $this->get('EMPLID');
+        
+        $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_experience($emplid);
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -474,9 +474,9 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	 function sk_get()
+    }
+    
+     function sk_get()
     {
         
          if(!$this->get('EMPLID'))
@@ -497,8 +497,8 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	 function sti_get()
+    
+     function sti_get()
     {
         
          if(!$this->get('EMPLID'))
@@ -519,19 +519,19 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
-	
-	
-	function jabatan_get()
-	{
-		
-		 if(!$this->get('EMPLID'))
+    
+    
+    function jabatan_get()
+    {
+        
+         if(!$this->get('EMPLID'))
         {
             $this->response(NULL, 400);
         }
-		
-		$emplid = $this->get('EMPLID');
+        
+        $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_jabatan($emplid);
-		
+        
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
@@ -541,9 +541,9 @@ class Users extends REST_Controller
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
-	}
-	
-	 function ikatan_dinas_get()
+    }
+    
+     function ikatan_dinas_get()
     {
         
         if(!$this->get('EMPLID'))
@@ -1202,7 +1202,7 @@ class Users extends REST_Controller
 
     function last_leave_number_sequence_get()
     {
-        $users = getValue('NEXTREC', 'NUMBERSEQUENCETABLE', array('NUMBERSEQUENCE'=>'WHERE/HCT'));
+        $users = $this->db->select_max('NEXTREC')->WHERE('NUMBERSEQUENCE', 'HCT')->GET('NUMBERSEQUENCETABLE')->row()->NEXTREC;
         
         if($users)
         {
@@ -1212,6 +1212,63 @@ class Users extends REST_Controller
         else
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function last_entitlement_number_sequence_get()
+    {
+        $users = $this->db->select_max('NEXTREC')->WHERE('NUMBERSEQUENCE', 'RSLv_001')->GET('NUMBERSEQUENCETABLE')->row()->NEXTREC;
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function update_leave_number_sequence_post(){
+
+        $data=array(
+        'NEXTREC' => $this->get('NEXTREC'),
+         );
+
+        $this->db->where('NUMBERSEQUENCE', 'HCT');
+        $result = $this->db->update('NUMBERSEQUENCETABLE', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+    }
+
+    function update_entitlement_number_sequence_post(){
+
+        $data=array(
+        'NEXTREC' => $this->get('NEXTREC'),
+         );
+
+        $this->db->where('NUMBERSEQUENCE', 'RSLv_001');
+        $result = $this->db->update('NUMBERSEQUENCETABLE', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
         }
     }
 }
