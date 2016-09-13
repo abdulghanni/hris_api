@@ -57,6 +57,30 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
+
+    function lists2_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
+        $q = $this->db->get("HRSEMPLOYEETABLE");
+        
+        $users = $q->num_rows();//$get_all_users->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
     
     function all_get()
     {   
@@ -893,6 +917,28 @@ class Users extends REST_Controller
          );
 
         $this->db->where('EMPLID', $this->get('nik'))->WHERE('LEAVEDATEFROM', $this->get('date'))->WHERE('LEAVEDATETO', $this->get('end_date'));
+        $result = $this->db->update('HRSLEAVEREQUEST', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
+    }
+
+    function update_totalleavedays_post()
+    {
+        $data=array(
+        'TOTALLEAVEDAYS' => 1,
+         );
+
+        $this->db->where('IDLEAVEREQUEST', 'CT012352');
         $result = $this->db->update('HRSLEAVEREQUEST', $data);
 
         if($result === FALSE)  
