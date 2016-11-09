@@ -630,6 +630,7 @@ function get_all_org()
 	$this->db->select('ORGANIZATION.HRSORGANIZATIONID AS ID, ORGANIZATION.DESCRIPTION AS DESCRIPTION');
 	$this->db->from('HRSORGANIZATION AS ORGANIZATION');
 	$this->db->where('ORGANIZATION.DATAAREAID', 'erl');
+	$this->db->where('ORGANIZATION.ACTIVE', '1');
 	$q = $this->db->get()->result_array();
 
 	return $q;
