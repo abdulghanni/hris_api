@@ -158,6 +158,27 @@ class Users extends REST_Controller
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
         }
     }
+
+    function user_at_org_get()
+    {
+        if(!$this->get('ORGID'))
+        {
+            $this->response(NULL, 400);
+        }
+
+        //$users = $this->api_model->get_user_in_org('50414000');
+        $users = $this->api_model->get_user_at_org($this->get('ORGID'));
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
     
      function org_get()
     {   
@@ -294,6 +315,27 @@ class Users extends REST_Controller
         
         $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_user_org($emplid)['ORGANIZATION'];
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function user_orgid_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_user_orgid($emplid);
         
         if($users)
         {
@@ -782,6 +824,27 @@ class Users extends REST_Controller
         }
     }
 
+    function employees_by_pos_get()
+    {   
+        if(!$this->get('POSID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $posid = $this->get('POSID');
+        $users = $this->api_model->get_employees_by_position($posid);
+        //print_mz($this->db->last_query());
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
     function pos_from_org_get()
     {
         if(!$this->get('ORGID'))
@@ -791,6 +854,27 @@ class Users extends REST_Controller
         
         $orgid = $this->get('ORGID');
         $users = $this->api_model->get_pos_from_org($orgid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function user_pos_from_org_get()
+    {
+        if(!$this->get('ORGID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $orgid = $this->get('ORGID');
+        $users = $this->api_model->get_user_pos_from_org($orgid);
         
         if($users)
         {
