@@ -66,10 +66,31 @@ class Users extends REST_Controller
         }
         
         $emplid = $this->get('EMPLID');
-        $this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
+        //$this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
+        $this->db->select("EMPLID")->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
         $q = $this->db->get("HRSEMPLOYEETABLE");
         
         $users = $q->num_rows();//$get_all_users->result_array();
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function lists3_get()
+    {   
+                
+        //$emplid = $this->get('EMPLID');
+        $this->db->select("EMPLID,HRSEMPLSTATUS,STATUS,HRSACTIVEINACTIVE")->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl');
+        $q = $this->db->get("HRSEMPLOYEETABLE");
+        
+        $users = $q->result_array();//$get_all_users->result_array();
         
         if($users)
         {
