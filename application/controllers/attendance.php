@@ -92,69 +92,95 @@ class Attendance extends REST_Controller
 
     function attendance_data_post()
     {
-        $data=array(
-        'EMPLID' => $this->get('EMPLID'),
-        'OVERTIMEFLAG' => 0,
-        'COMPARISONFLAG' => 0,
-        'ATTENDANCEDATE' => $this->get('ATTENDANCEDATE'),
-        'CLOCKIN' => 0,
-        'CLOCKOUT' => 0,
-        'ATTENDANCESTATUS' => 2,
-        'LEAVETYPEID' => ' ',
-        'ABSENCESTATUS' => 12,
-        'UNIT1' => 'TRN',
-        'VALUE1' => '.000000000000',
-        'UNIT2' => 'UMH',
-        'UNIT3' => ' ',
-        'UNIT4' => ' ',
-        'UNIT5' => ' ',
-        'UNIT6' => ' ',
-        'UNIT7' => ' ',
-        'UNIT8' => ' ',
-        'UNIT9' => ' ',
-        'UNIT10' => ' ',
-        'VALUE2' => '.000000000000',
-        'VALUE3' => '.000000000000',
-        'VALUE4' => '.000000000000',
-        'VALUE5' => '.000000000000',
-        'VALUE6' => '.000000000000',
-        'VALUE7' => '.000000000000',
-        'VALUE8' => '.000000000000',
-        'VALUE9' => '.000000000000',
-        'VALUE10' => '.000000000000',
-        'EMPLSTATUS' => $this->get('EMPLSTATUS'),
-        'ADDITIONALHOURS' => 0,
-        'MINUS' => 0,
-        'HRSLOCATIONID' => $this->get('HRSLOCATIONID'),
-        'TMSCHEDULETYPE' => ' ',
-        'HRSVIRTUALNETWORKGROUPID' => 'NORMAL',
-        'DIMENSION' => $this->get('DIMENSION'),
-        'DIMENSION2_' => $this->get('DIMENSION2_'),
-        'DIMENSION3_' => ' ',
-        'HRSCOMPANYID' => 'ERL',
-        'HRSSCHEDULEID' =>  $this->get('HRSSCHEDULEID'),
-        'MODIFIEDDATETIME' => $this->get('MODIFIEDDATETIME'),
-        'MODIFIEDBY' => $this->get('MODIFIEDBY'),
-        'CREATEDDATETIME' => $this->get('CREATEDDATETIME'),
-        'CREATEDBY' => $this->get('CREATEDBY'),
-        'DATAAREAID' => $this->get('DATAAREAID'),
-        'RECVERSION' => $this->get('RECVERSION'),
-        'RECID' => $this->get('RECID'),
-        'BRANCHID' => $this->get('BRANCHID'),
-         );
+        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array('EMPLID'=>$this->get('EMPLID'),'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),'HRSCOMPANYID'=>'ERL'));
+        if($exist->num_rows() > 0){
+            $data_update = array(
+                //'ATTENDANCEDATE' => $this->get('ATTENDANCEDATE'),
+                'ATTENDANCESTATUS' => 2,
+                'ABSENCESTATUS' => 12,
+            );
+            $this->db->where('EMPLID',$this->get('EMPLID'));
+            $this->db->where('ATTENDANCEDATE',$this->get('ATTENDANCEDATE'));
+            $this->db->where('HRSCOMPANYID',$this->get('ATTENDANCEDATE'));
+            $result = $this->db->update('HRSTMATTENDANCEDATA', $data_update); 
+             //print_mz()
+            if($result === FALSE)  
+            {  
+                $this->response(array('status' => 'update failed'));  
+            }  
+            else  
+            {  
+                //print_r($this->db->last_query());
+                $this->response(array('status' => 'update success'));
+                   
+            }
+        }else{
+            $data=array(
+                'EMPLID' => $this->get('EMPLID'),
+                'OVERTIMEFLAG' => 0,
+                'COMPARISONFLAG' => 0,
+                'ATTENDANCEDATE' => $this->get('ERL'),
+                'CLOCKIN' => 0,
+                'CLOCKOUT' => 0,
+                'ATTENDANCESTATUS' => 2,
+                'LEAVETYPEID' => ' ',
+                'ABSENCESTATUS' => 12,
+                'UNIT1' => 'TRN',
+                'VALUE1' => '.000000000000',
+                'UNIT2' => 'UMH',
+                'UNIT3' => ' ',
+                'UNIT4' => ' ',
+                'UNIT5' => ' ',
+                'UNIT6' => ' ',
+                'UNIT7' => ' ',
+                'UNIT8' => ' ',
+                'UNIT9' => ' ',
+                'UNIT10' => ' ',
+                'VALUE2' => '.000000000000',
+                'VALUE3' => '.000000000000',
+                'VALUE4' => '.000000000000',
+                'VALUE5' => '.000000000000',
+                'VALUE6' => '.000000000000',
+                'VALUE7' => '.000000000000',
+                'VALUE8' => '.000000000000',
+                'VALUE9' => '.000000000000',
+                'VALUE10' => '.000000000000',
+                'EMPLSTATUS' => $this->get('EMPLSTATUS'),
+                'ADDITIONALHOURS' => 0,
+                'MINUS' => 0,
+                'HRSLOCATIONID' => $this->get('HRSLOCATIONID'),
+                'TMSCHEDULETYPE' => ' ',
+                'HRSVIRTUALNETWORKGROUPID' => 'NORMAL',
+                'DIMENSION' => $this->get('DIMENSION'),
+                'DIMENSION2_' => $this->get('DIMENSION2_'),
+                'DIMENSION3_' => ' ',
+                'HRSCOMPANYID' => 'ERL',
+                'HRSSCHEDULEID' =>  $this->get('HRSSCHEDULEID'),
+                'MODIFIEDDATETIME' => $this->get('MODIFIEDDATETIME'),
+                'MODIFIEDBY' => $this->get('MODIFIEDBY'),
+                'CREATEDDATETIME' => $this->get('CREATEDDATETIME'),
+                'CREATEDBY' => $this->get('CREATEDBY'),
+                'DATAAREAID' => $this->get('DATAAREAID'),
+                'RECVERSION' => $this->get('RECVERSION'),
+                'RECID' => $this->get('RECID'),
+                'BRANCHID' => $this->get('BRANCHID'),
+             );
 
-        $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
-        //print_mz()
-        if($result === FALSE)  
-        {  
-            $this->response(array('status' => 'failed'));  
-        }  
-        else  
-        {  
-            //print_r($this->db->last_query());
-            $this->response(array('status' => 'success'));
-               
+            $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
+            //print_mz()
+            if($result === FALSE)  
+            {  
+                $this->response(array('status' => 'insert failed'));  
+            }  
+            else  
+            {  
+                //print_r($this->db->last_query());
+                $this->response(array('status' => 'insert success'));
+                   
+            }
         }
+
+        
     }
 
     function last_attendance_id_get()
