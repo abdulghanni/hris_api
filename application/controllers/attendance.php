@@ -120,12 +120,12 @@ class Attendance extends REST_Controller
              //print_mz()
             if($result === FALSE)  
             {  
-                $this->response(array('status' => 'update failed'));  
+                $this->response(array('status' => 'failed'));  
             }  
             else  
             {  
                 //print_r($this->db->last_query());
-                $this->response(array('status' => 'update success'));
+                $this->response(array('status' => 'success'));
                    
             }
         }else{
@@ -183,11 +183,11 @@ class Attendance extends REST_Controller
             $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
             if($result === FALSE)  
             {  
-                $this->response(array('status' => 'insert failed'));  
+                $this->response(array('status' => 'failed'));  
             }  
             else  
             {  
-                $this->response(array('status' => 'insert success'));
+                $this->response(array('status' => 'success'));
                    
             }
         }
