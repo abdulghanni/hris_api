@@ -93,9 +93,19 @@ class Attendance extends REST_Controller
     function attendance_data_post()
     {
         $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array('EMPLID'=>$this->get('EMPLID'),'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),'HRSCOMPANYID'=>'ERL'));
-        if($exist->num_rows() > 0){
+        
+        if($exist->num_rows() > 0)  
+        {  
+            $this->response(array('status' => 'row : '.$exist->num_rows()));  
+        }  
+        else  
+        {  
+            $this->response(array('status' => 'row : 0'));
+               
+        }
+
+        /*if($exist->num_rows() > 0){
             $data_update = array(
-                //'ATTENDANCEDATE' => $this->get('ATTENDANCEDATE'),
                 'ATTENDANCESTATUS' => 2,
                 'ABSENCESTATUS' => 12,
             );
@@ -167,20 +177,16 @@ class Attendance extends REST_Controller
              );
 
             $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
-            //print_mz()
             if($result === FALSE)  
             {  
                 $this->response(array('status' => 'insert failed'));  
             }  
             else  
             {  
-                //print_r($this->db->last_query());
                 $this->response(array('status' => 'insert success'));
                    
             }
-        }
-
-        
+        }*/
     }
 
     function last_attendance_id_get()
