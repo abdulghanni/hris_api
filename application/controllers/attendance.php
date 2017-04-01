@@ -101,7 +101,7 @@ class Attendance extends REST_Controller
             );
             $this->db->where('EMPLID',$this->get('EMPLID'));
             $this->db->where('ATTENDANCEDATE',$this->get('ATTENDANCEDATE'));
-            $this->db->where('HRSCOMPANYID',$this->get('ATTENDANCEDATE'));
+            $this->db->where('HRSCOMPANYID','ERL');
             $result = $this->db->update('HRSTMATTENDANCEDATA', $data_update); 
              //print_mz()
             if($result === FALSE)  
@@ -119,7 +119,7 @@ class Attendance extends REST_Controller
                 'EMPLID' => $this->get('EMPLID'),
                 'OVERTIMEFLAG' => 0,
                 'COMPARISONFLAG' => 0,
-                'ATTENDANCEDATE' => $this->get('ERL'),
+                'ATTENDANCEDATE' => $this->get('ATTENDANCEDATE'),
                 'CLOCKIN' => 0,
                 'CLOCKOUT' => 0,
                 'ATTENDANCESTATUS' => 2,
