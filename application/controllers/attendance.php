@@ -92,7 +92,11 @@ class Attendance extends REST_Controller
 
     function attendance_data_post()
     {
-        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array('EMPLID'=>$this->get('EMPLID'),'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),'DATAAREAID',$this->get('DATAAREAID')));
+        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array(
+            'EMPLID'=>$this->get('EMPLID'),
+            'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),
+            'DATAAREAID'=>$this->get('DATAAREAID'))
+        );
         
         /*if($exist->num_rows() > 0)  
         {  
