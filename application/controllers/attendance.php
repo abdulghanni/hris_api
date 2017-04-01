@@ -92,9 +92,9 @@ class Attendance extends REST_Controller
 
     function attendance_data_post()
     {
-        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array('EMPLID'=>$this->get('EMPLID'),'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),'HRSCOMPANYID'=>'ERL'));
+        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array('EMPLID'=>$this->get('EMPLID'),'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),'DATAAREAID',$this->get('DATAAREAID')));
         
-        if($exist->num_rows() > 0)  
+        /*if($exist->num_rows() > 0)  
         {  
             $this->response(array('status' => 'row : '.$exist->num_rows()));  
         }  
@@ -102,16 +102,16 @@ class Attendance extends REST_Controller
         {  
             $this->response(array('status' => 'row : 0'));
                
-        }
+        }*/
 
-        /*if($exist->num_rows() > 0){
+        if($exist->num_rows() > 0){
             $data_update = array(
                 'ATTENDANCESTATUS' => 2,
                 'ABSENCESTATUS' => 12,
             );
             $this->db->where('EMPLID',$this->get('EMPLID'));
             $this->db->where('ATTENDANCEDATE',$this->get('ATTENDANCEDATE'));
-            $this->db->where('HRSCOMPANYID','ERL');
+            $this->db->where('DATAAREAID',$this->get('DATAAREAID'));
             $result = $this->db->update('HRSTMATTENDANCEDATA', $data_update); 
              //print_mz()
             if($result === FALSE)  
@@ -186,7 +186,7 @@ class Attendance extends REST_Controller
                 $this->response(array('status' => 'insert success'));
                    
             }
-        }*/
+        }
     }
 
     function last_attendance_id_get()
