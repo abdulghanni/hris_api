@@ -948,10 +948,23 @@ function get_course($emplid)
 		}
 		//print_mz($y);
 		//$y = 2015 ;
-		$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
+		if($y % 4 == 0)
+		{
+			if(date("m-d", strtotime($seniority_date)) == '2-29')
+			{
+				$d = date("d", strtotime($seniority_date)) - 1;
+				$m = date("m-d", strtotime($seniority_date));
+				$startactivedate = $y.'-'.$m.'-'.$d;
+			}else{
+				$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
+			}
+		}else{
+			$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
+		}
+		//$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
 	    $endactivedate = date('Y-m-d', strtotime('+1 Year', strtotime($startactivedate)));
 	    $endactivedate = date('Y-m-d', strtotime('-1 Day', strtotime($endactivedate)));
-		$this->db->select('ENTITLEMENT.ENTITLEMENT AS ENTITLEMENT, ENTITLEMENT.RECID AS RECID, STARTACTIVEDATE');
+		$this->db->select('ENTITLEMENT.ENTITLEMENT AS ENTITLEMENT, ENTITLEMENT.RECID AS RECID, STARTACTIVEDATE, ENDACTIVEDATE');
 
 		$this->db->from('HRSLEAVEENTITLEMENT AS ENTITLEMENT');
 		$this->db->join('HRSEMPLOYEETABLE AS EMPLOYEE', 'ENTITLEMENT.EMPLID = EMPLOYEE.EMPLID and EMPLOYEE.DATAAREAID=ENTITLEMENT.DATAAREAID');
