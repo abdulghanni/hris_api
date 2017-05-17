@@ -950,10 +950,10 @@ function get_course($emplid)
 		//$y = 2015 ;
 		if(date("y", strtotime($seniority_date)) % 4 == 0)
 		{
-			if(date("m-d", strtotime($seniority_date)) == '2-29')
+			if(date("m-d", strtotime($seniority_date)) == '02-29')
 			{
 				$d = date("d", strtotime($seniority_date)) - 1;
-				$m = date("m-d", strtotime($seniority_date));
+				$m = date("m", strtotime($seniority_date));
 				$startactivedate = $y.'-'.$m.'-'.$d;
 			}else{
 				$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
