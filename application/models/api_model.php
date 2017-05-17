@@ -948,7 +948,7 @@ function get_course($emplid)
 		}
 		//print_mz($y);
 		//$y = 2015 ;
-		if($y % 4 == 0)
+		if(date("y", strtotime($seniority_date)) % 4 == 0)
 		{
 			if(date("m-d", strtotime($seniority_date)) == '2-29')
 			{
