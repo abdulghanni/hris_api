@@ -1037,6 +1037,26 @@ class Users extends REST_Controller
 
     }
 
+    function update_attendance_data_post()
+    {
+        $data=array(
+        'ABSENCESTATUS' => $this->get('absencestatus'),
+         );
+
+        $this->db->where('EMPLID', $this->get('nik'))->WHERE('ATTENDANCEDATE', $this->get('date'));
+        $result = $this->db->update('HRSTMATTENDANCEDATA', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+            $this->response(array('status' => 'success'));    
+        }
+
+    }
+
     function update_totalleavedays_post()
     {
         $data=array(
