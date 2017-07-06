@@ -942,9 +942,10 @@ function get_course($emplid)
 		$seniority_date = $this->db->where('EMPLID', $emplid)->get('HRSEMPLOYEETABLE')->row('SENIORITYDATE');
 		//die("die".date("d-m",now()));
 		if(date("m-d", strtotime($seniority_date)) > date("m-d", now())){
-		$y = date('Y')-1;
+			//$y = date('Y');
+			$y = date('Y')-1;
 		}else{
-			$y = date('Y');
+			$y = date('Y')-1;
 		}
 		//print_mz($y);
 		//$y = 2015 ;
@@ -974,7 +975,7 @@ function get_course($emplid)
 		$this->db->where('ENDACTIVEDATE', $endactivedate);
 
 		$q = $this->db->get()->result_array();
-
+		//echo $this->db->last_query();
 		return $q;
 	}
 
