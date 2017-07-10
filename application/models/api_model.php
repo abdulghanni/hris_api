@@ -943,10 +943,8 @@ function get_course($emplid)
 		//die("die".date("d-m",now()));
 		if(date("m-d", strtotime($seniority_date)) > date("m-d", now())){
 			$y = date('Y')-1;
-			//$y = date('Y')-1;
 		}else{
-			//$y = date('Y')-3;
-			$y = date('Y')-1;
+			$y = date('Y');
 		}
 		//print_mz($y);
 		//$y = 2015 ;
