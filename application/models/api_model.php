@@ -972,6 +972,7 @@ function get_course($emplid)
 		$this->db->where('ENTITLEMENT.EMPLID', $emplid);
 		$this->db->where('STARTACTIVEDATE', $startactivedate);
 		$this->db->where('ENDACTIVEDATE', $endactivedate);
+		$this->db->where('HRSLEAVETYPEID', 'CTT');
 
 		$q = $this->db->get()->result_array();
 		//echo $this->db->last_query();
