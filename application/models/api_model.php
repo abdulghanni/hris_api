@@ -942,11 +942,11 @@ function get_course($emplid)
 		$seniority_date = $this->db->where('EMPLID', $emplid)->get('HRSEMPLOYEETABLE')->row('SENIORITYDATE');
 		//die("die".date("d-m",now()));
 		if(date("m-d", strtotime($seniority_date)) > date("m-d", now())){
-			$y = date('Y');
+			$y = date('Y')-1;
 			//$y = date('Y')-1;
 		}else{
-			//$y = date('Y')-1;
-			$y = date('Y');
+			//$y = date('Y')-3;
+			$y = date('Y')-1;
 		}
 		//print_mz($y);
 		//$y = 2015 ;
@@ -966,7 +966,7 @@ function get_course($emplid)
 		//$startactivedate = $y.'-'.date('m-d', strtotime($seniority_date));
 	    $endactivedate = date('Y-m-d', strtotime('+1 Year', strtotime($startactivedate)));
 	    $endactivedate = date('Y-m-d', strtotime('-1 Day', strtotime($endactivedate)));
-		$this->db->select('ENTITLEMENT.ENTITLEMENT AS ENTITLEMENT, ENTITLEMENT.RECID AS RECID, STARTACTIVEDATE, ENDACTIVEDATE');
+		$this->db->select('ENTITLEMENT.ENTITLEMENT AS ENTITLEMENT, ENTITLEMENT.RECID AS RECID, STARTACTIVEDATE, ENDACTIVEDATE, EMPLOYEE.SENIORITYDATE AS SENIORITYDATE');
 
 		$this->db->from('HRSLEAVEENTITLEMENT AS ENTITLEMENT');
 		$this->db->join('HRSEMPLOYEETABLE AS EMPLOYEE', 'ENTITLEMENT.EMPLID = EMPLOYEE.EMPLID and EMPLOYEE.DATAAREAID=ENTITLEMENT.DATAAREAID');
