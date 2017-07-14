@@ -1019,6 +1019,7 @@ class Users extends REST_Controller
     {
         $data=array(
         'STATUSFLAG' => $this->get('status_id'),
+        'IDAPPROVAL' => $this->get('id_approval')
          );
 
         $this->db->where('EMPLID', $this->get('nik'))->WHERE('LEAVEDATEFROM', $this->get('date'))->WHERE('LEAVEDATETO', $this->get('end_date'));
@@ -1158,6 +1159,78 @@ class Users extends REST_Controller
 
     }
 
+    function insert_leaveentitlement_post()
+    {
+        $leavetypeversion_arr = $this->api_model->get_leave_type_version('CTT');
+        if($leavetypeversion_arr->num_rows() > 0)
+        {
+            $leavetypeversion = $leavetypeversion_arr->row_array();
+        }else{
+            $leavetypeversion = array();
+        }
+
+        $leave_type_grade_arr = $this->api_model->get_leave_type_grade($leavetypeversion['IDLEAVETYPEVERSION']);
+        if($leave_type_grade_arr->num_rows() > 0)
+        {
+            $leave_type_grade = $leave_type_grade_arr->row_array();
+        }else{
+            $leave_type_grade = array();
+        }
+
+        $data=array(
+            'CURRCF' => $leavetypeversion['MAXCF'],
+            'ENDPERIODCF' => '1900-01-01 00:00:00.000',
+            'MAXENTITLEMENT' => $this->get('MAXENTITLEMENT'),
+            'MAXCF' => $leavetypeversion['MAXCF'],
+            'MAXADVANCE' => $leavetypeversion['MAXADVANCE'],
+            'ENTITLEMENT' => $leave_type_grade['NUMOFLEAVE'],//hrsleavetypegrade.NUmoFLEAVE
+            'STARTACTIVEDATE' => $this->get('STARTACTIVEDATE').' 00:00:00.000',
+            'ENDACTIVEDATE' => $this->get('ENDACTIVEDATE').' 00:00:00.000',
+            'IDLEAVEENTITLEMENT' => $this->get('IDLEAVEENTITLEMENT'),
+            'HRSLEAVETYPEID' => $leavetypeversion['HRSLEAVETYPEID'],
+            'CASHABLEFLAG' => $leavetypeversion['CASHABLEFLAG'],
+            'EMPLID' => $this->get('EMPLID'),
+            'ENTADJUSTMENT' => $this->get('ENTADJUSTMENT'),
+            'CFADJUSTMENT' => $this->get('CFADJUSTMENT'),
+            'ISCASHABLERESIGN' => $leavetypeversion['ISCASHABLERESIGN'],
+            'PAYROLLRESIGNFLAG' => $this->get('PAYROLLRESIGNFLAG'),
+            'FIRSTCALCULATIONDATE' => '1900-01-01 00:00:00.000',
+            'MATANG' => $this->get('MATANG'),
+            'PAYMENTLEAVEFLAG' => $leavetypeversion['PAYMENTLEAVEFLAG'],
+            'PAYMENTLEAVEAMOUNT' => $this->get('PAYMENTLEAVEAMOUNT'),
+            'SPMID' => $this->get('SPMIDSPM'),
+            'LASTGENERATEDATE' => '1900-01-01 00:00:00.000',
+            'ISSPM' => $this->get('ISSPM'),
+            'BASEDONMARITALSTATUS' => $leavetypeversion['BASEDONMARITALSTATUS'],
+            'BASEDONSALARY' => $leavetypeversion['BASEDONSALARY'],
+            'CASHABLEREQUESTFLAG' => $this->get('CASHABLEREQUESTFLAG'),
+            'PAYROLPAYMENTLEAVEFLAG' => $this->get('PAYROLPAYMENTLEAVEFLAG'),
+            'TGLMATANG' => '1900-01-01 00:00:00.000',
+            'MODIFIEDBY' => $this->get('MODIFIEDBY'),
+            'CREATEDBY' => $this->get('CREATEDBY'),
+            'DATAAREAID' => 'erl',
+            'RECVERSION' => $this->get('RECVERSION'),
+            'RECID' => $this->get('RECID'),
+            'HRSEMPLGROUPID' => $this->get('HRSEMPLGROUPID'),
+            'BRANCHID' => $this->get('BRANCHID'),
+            'ERL_LEAVECF' => $this->get('ERL_LEAVECF'),
+         );
+
+        $result = $this->db->insert('HRSLEAVEENTITLEMENT', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
+    }
+
 
     function leave_request_post()
     {
@@ -1207,6 +1280,38 @@ class Users extends REST_Controller
         }
     }
 
+    function appr_leave_request_post()
+    {
+        //die('here');
+        //$rep_email_char = array("[at]","[dot]");
+        //$std_email_char = array("@",".");
+        
+        //$email_post = str_replace($rep_email_char,$std_email_char,$this->get('SMS'));
+
+        $data=array(
+            'STATUSFLAG' => $this->get('STATUSFLAG'),
+            'IDAPPROVAL' => $this->get('IDAPPROVAL'),
+         );
+
+        //'LEAVEDATEFROM' => $this->get('LEAVEDATEFROM'),
+
+        $this->db->where('EMPLID', $this->get('EMPLID'));
+        $this->db->where('LEAVEDATEFROM', $this->get('LEAVEDATEFROM'));
+        $result = $this->db->update('HRSLEAVEREQUEST', $data);
+
+        if($result === FALSE)  
+        {  
+            $this->response(array('status' => 'failed'));  
+        }  
+        else  
+        {  
+             
+            $this->response(array('status' => 'success'));
+               
+        }
+
+    }
+
     function edit_employee_post()
     {
         $rep_email_char = array("[at]","[dot]");
@@ -1225,7 +1330,7 @@ class Users extends REST_Controller
          );
 
         $this->db->where('EMPLID', $this->get('EMPLID'));
-        $result = $this->db->update('HRSEMPLOYEETABLE', $data);
+        $result = $this->db->update('HRS EMPLOYEETABLE', $data);
 
         if($result === FALSE)  
         {  

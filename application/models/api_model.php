@@ -990,6 +990,30 @@ function get_course($emplid)
 		return $q;
 	}
 
+	function get_leave_type_version($type_id)
+	{
+		$this->db->select('HRSLEAVETYPEVERSION.*');
+		$this->db->from('HRSLEAVETYPEVERSION');
+		$this->db->where('HRSLEAVETYPEVERSION.DATAAREAID', 'erl');
+		$this->db->where('HRSLEAVETYPEVERSION.HRSLEAVETYPEID', $type_id);
+
+		$q = $this->db->get();
+
+		return $q;
+	}
+
+	function get_leave_type_grade($leave_type_version_id)
+	{
+		$this->db->select('HRSLEAVETYPEGRADE.*');
+		$this->db->from('HRSLEAVETYPEGRADE');
+		$this->db->where('HRSLEAVETYPEGRADE.DATAAREAID', 'erl');
+		$this->db->where('HRSLEAVETYPEGRADE.IDLEAVETYPEVERSION', $leave_type_version_id);
+
+		$q = $this->db->get();
+
+		return $q;
+	}
+
 	
 
     function get_data($select, $table){         
