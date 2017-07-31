@@ -1018,11 +1018,11 @@ class Users extends REST_Controller
     function update_flag_cuti_post()
     {
         $data=array(
-        'STATUSFLAG' => $this->get('status_id'),
-        'IDAPPROVAL' => $this->get('id_approval')
+        'STATUSFLAG' => $this->post('status_id'),
+        'IDAPPROVAL' => $this->post('id_approval')
          );
 
-        $this->db->where('EMPLID', $this->get('nik'))->WHERE('LEAVEDATEFROM', $this->get('date'))->WHERE('LEAVEDATETO', $this->get('end_date'));
+        $this->db->where('EMPLID', $this->post('nik'))->WHERE('LEAVEDATEFROM', $this->post('date'))->WHERE('LEAVEDATETO', $this->post('end_date'));
         $result = $this->db->update('HRSLEAVEREQUEST', $data);
 
         if($result === FALSE)  
