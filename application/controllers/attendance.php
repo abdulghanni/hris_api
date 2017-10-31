@@ -216,7 +216,7 @@ class Attendance extends REST_Controller
         }
     }
 
-    function attendance_data_post()
+    function attendance_data_get()
     {
         $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array(
             'EMPLID'=>$this->get('EMPLID'),
