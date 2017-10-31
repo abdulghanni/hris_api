@@ -319,8 +319,9 @@ class Attendance extends REST_Controller
         }
     }
 
-    function attendance_data_cuti_post()
+    function attendance_data_cuti_get()
     {
+
         $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array(
             'EMPLID'=>$this->get('EMPLID'),
             'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),
@@ -346,7 +347,8 @@ class Attendance extends REST_Controller
             $this->db->where('ATTENDANCEDATE',$this->get('ATTENDANCEDATE'));
             $this->db->where('DATAAREAID',$this->get('DATAAREAID'));
             $result = $this->db->update('HRSTMATTENDANCEDATA', $data_update); 
-             //print_mz()
+            //print_mz();
+
             if($result === FALSE)  
             {  
                 $this->response(array('status' => 'failed'));  
@@ -358,6 +360,7 @@ class Attendance extends REST_Controller
                    
             }
         }else{
+
             $data=array(
                 'EMPLID' => $this->get('EMPLID'),
                 'OVERTIMEFLAG' => 0,
@@ -410,6 +413,7 @@ class Attendance extends REST_Controller
              );
 
             $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
+
             if($result === FALSE)  
             {  
                 $this->response(array('status' => 'failed'));  
