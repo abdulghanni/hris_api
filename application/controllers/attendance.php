@@ -319,6 +319,109 @@ class Attendance extends REST_Controller
         }
     }
 
+    function attendance_data_pjd_get()
+    {
+        $exist = $this->db->get_where('HRSTMATTENDANCEDATA',array(
+            'EMPLID'=>$this->get('EMPLID'),
+            'ATTENDANCEDATE'=>$this->get('ATTENDANCEDATE'),
+            'DATAAREAID'=>$this->get('DATAAREAID'))
+        );
+        
+        /*if($exist->num_rows() > 0)  
+        {  
+            $this->response(array('status' => 'row : '.$exist->num_rows()));  
+        }  
+        else  
+        {  
+            $this->response(array('status' => 'row : 0'));
+               
+        }*/
+
+        if($exist->num_rows() > 0){
+            $data_update = array(
+                'ATTENDANCESTATUS' => 2,
+                'ABSENCESTATUS' => 6,
+            );
+            $this->db->where('EMPLID',$this->get('EMPLID'));
+            $this->db->where('ATTENDANCEDATE',$this->get('ATTENDANCEDATE'));
+            $this->db->where('DATAAREAID',$this->get('DATAAREAID'));
+            $result = $this->db->update('HRSTMATTENDANCEDATA', $data_update); 
+             //print_mz()
+            if($result === FALSE)  
+            {  
+                $this->response(array('status' => 'failed'));  
+            }  
+            else  
+            {  
+                //print_r($this->db->last_query());
+                $this->response(array('status' => 'success'));
+                   
+            }
+        }else{
+            $data=array(
+                'EMPLID' => $this->get('EMPLID'),
+                'OVERTIMEFLAG' => 0,
+                'COMPARISONFLAG' => 0,
+                'ATTENDANCEDATE' => $this->get('ATTENDANCEDATE'),
+                'CLOCKIN' => 0,
+                'CLOCKOUT' => 0,
+                'ATTENDANCESTATUS' => 2,
+                'LEAVETYPEID' => ' ',
+                'ABSENCESTATUS' => 6,
+                'UNIT1' => 'TRN',
+                'VALUE1' => '.000000000000',
+                'UNIT2' => 'UMH',
+                'UNIT3' => ' ',
+                'UNIT4' => ' ',
+                'UNIT5' => ' ',
+                'UNIT6' => ' ',
+                'UNIT7' => ' ',
+                'UNIT8' => ' ',
+                'UNIT9' => ' ',
+                'UNIT10' => ' ',
+                'VALUE2' => '.000000000000',
+                'VALUE3' => '.000000000000',
+                'VALUE4' => '.000000000000',
+                'VALUE5' => '.000000000000',
+                'VALUE6' => '.000000000000',
+                'VALUE7' => '.000000000000',
+                'VALUE8' => '.000000000000',
+                'VALUE9' => '.000000000000',
+                'VALUE10' => '.000000000000',
+                'EMPLSTATUS' => $this->get('EMPLSTATUS'),
+                'ADDITIONALHOURS' => 0,
+                'MINUS' => 0,
+                'HRSLOCATIONID' => $this->get('HRSLOCATIONID'),
+                'TMSCHEDULETYPE' => ' ',
+                'HRSVIRTUALNETWORKGROUPID' => 'NORMAL',
+                'DIMENSION' => $this->get('DIMENSION'),
+                'DIMENSION2_' => $this->get('DIMENSION2_'),
+                'DIMENSION3_' => ' ',
+                'HRSCOMPANYID' => 'ERL',
+                'HRSSCHEDULEID' =>  $this->get('HRSSCHEDULEID'),
+                'MODIFIEDDATETIME' => $this->get('MODIFIEDDATETIME'),
+                'MODIFIEDBY' => $this->get('MODIFIEDBY'),
+                'CREATEDDATETIME' => $this->get('CREATEDDATETIME'),
+                'CREATEDBY' => $this->get('CREATEDBY'),
+                'DATAAREAID' => $this->get('DATAAREAID'),
+                'RECVERSION' => $this->get('RECVERSION'),
+                'RECID' => $this->get('RECID'),
+                'BRANCHID' => $this->get('BRANCHID'),
+             );
+
+            $result = $this->db->insert('HRSTMATTENDANCEDATA', $data);
+            if($result === FALSE)  
+            {  
+                $this->response(array('status' => 'failed'));  
+            }  
+            else  
+            {  
+                $this->response(array('status' => 'success'));
+                   
+            }
+        }
+    }
+
     function attendance_data_cuti_get()
     {
 

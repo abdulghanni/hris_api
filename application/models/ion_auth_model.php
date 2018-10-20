@@ -962,6 +962,7 @@ class Ion_auth_model extends CI_Model
 
         $query = $this->db->select($this->identity_column . ', username, email, id, password, active, last_login')
                           ->where($this->identity_column, $identity)
+                          ->where('active', 1)
                           ->limit(1)
                           ->get($this->tables['users']);
 

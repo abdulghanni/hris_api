@@ -18,7 +18,7 @@ require APPPATH.'/libraries/REST_Controller.php';
 
 class Users extends REST_Controller
 {
-    
+
     function list_get()
     {
         if(!$this->get('EMPLID'))
@@ -67,16 +67,16 @@ class Users extends REST_Controller
         
         $emplid = $this->get('EMPLID');
         //$this->db->select("EMPLID")->where('STATUS != 2')->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
-        $this->db->select("EMPLID")->where('HRSACTIVEINACTIVE != 1')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
+        $this->db->select("EMPLID")->where('HRSACTIVEINACTIVE != 0')->where('DATAAREAID', 'erl')->where('EMPLID', $emplid);
         $q = $this->db->get("HRSEMPLOYEETABLE");
-        
-        $users = $q->num_rows();//$get_all_users->result_array();
-        
+        //echo $this->db->last_query();
+        //exit();
+        //$users = $q->num_rows();//$get_all_users->result_array();
+        $users = $q->result_array();
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code
         }
-
         else
         {
             $this->response(array('error' => 'Couldn\'t find any users!'), 404);
@@ -442,6 +442,27 @@ class Users extends REST_Controller
         
         $emplid = $this->get('EMPLID');
         $users = $this->api_model->get_emp_by_bu($emplid);
+        
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+     function emp_rekom_satu_bu_get()
+    {   
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $users = $this->api_model->get_emp_rekom_by_bu($emplid);
         
         if($users)
         {
@@ -1355,6 +1376,30 @@ class Users extends REST_Controller
         $buid = $this->get('BUID');
         $users = $this->api_model->get_hrd_list($buid);
         
+        if($users)
+        {
+            $this->response($users, 200); // 200 being the HTTP response code
+        }
+
+        else
+        {
+            $this->response(array('error' => 'Couldn\'t find any users!'), 404);
+        }
+    }
+
+    function ka_akt_list_get($emplid)
+    {
+        if(!$this->get('EMPLID'))
+        {
+            $this->response(NULL, 400);
+        }
+        
+        $emplid = $this->get('EMPLID');
+        $q = $this->api_model->get_employement($emplid);
+        $DIMENSION2_ = $q['BUID'];
+        //die($DIMENSION2_);
+        $users = $this->api_model->get_ka_akt_list($DIMENSION2_);
+        //die('data'.$this->db->last_query());
         if($users)
         {
             $this->response($users, 200); // 200 being the HTTP response code

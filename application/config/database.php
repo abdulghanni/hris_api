@@ -62,10 +62,11 @@ $db['default']['stricton'] = FALSE;
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '10.1.1.14';
+$db['default']['hostname'] = '10.1.4.55';
 $db['default']['username'] = 'api_hrd';
 $db['default']['password'] = 'Ap1hrd01s';
-$db['default']['database'] = 'Restore_16_jan_2015';
+//$db['default']['password'] = 'apihrd123';
+$db['default']['database'] = 'Ax_2009_Live';
 $db['default']['dbdriver'] = 'sqlsrv';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
